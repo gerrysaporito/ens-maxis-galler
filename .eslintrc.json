@@ -1,3 +1,91 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "sznm/react",
+    "plugin:react/jsx-runtime",
+    "plugin:@next/next/recommended",
+    "next/core-web-vitals"
+  ],
+  "rules": {
+    "react/display-name": "off",
+    "react/destructuring-assignment": "warn",
+    "import/prefer-default-export": "off",
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "@typescript-eslint/naming-convention": "off",
+    "consistent-return": "off",
+    "@typescript-eslint/no-throw-literal": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-shadow": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/ban-types": "warn",
+    "@typescript-eslint/consistent-type-imports": "warn",
+    "react/jsx-no-useless-fragment": "warn",
+    "no-nested-ternary": "off",
+    "@typescript-eslint/no-non-null-assertion": "warn",
+    "sonarjs/no-identical-expressions": "warn",
+    "sonarjs/no-nested-switch": "off",
+    "complexity": [
+      "warn",
+      60
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": [
+          "draft"
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "ForInStatement",
+        "message": "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array."
+      },
+      {
+        "selector": "LabeledStatement",
+        "message": "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand."
+      },
+      {
+        "selector": "WithStatement",
+        "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
+      }
+    ],
+    "no-fallthrough": [
+      "warn"
+    ],
+    "sonarjs/no-small-switch": "off",
+    "radix": "off",
+    "no-plusplus": "off",
+    "sonarjs/no-collapsible-if": "off",
+    "import/no-cycle": "warn",
+    "default-case": "off",
+    "no-restricted-globals": "off",
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
+    "no-await-in-loop": "off",
+    "sonarjs/no-duplicate-string": "warn",
+    "sonarjs/cognitive-complexity": [
+      "warn",
+      25
+    ],
+    "no-case-declarations": "warn",
+    "sonarjs/no-identical-functions": "warn",
+    "sonarjs/prefer-single-boolean-return": "warn",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
+    "react/no-array-index-key": "off",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "jsx-a11y/media-has-caption": "warn",
+    "import/no-extraneous-dependencies": "error",
+    "import/no-anonymous-default-export": "off",
+    "no-continue": "warn",
+    "prefer-regex-literals": "warn"
+  }
 }

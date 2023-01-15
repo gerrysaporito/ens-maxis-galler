@@ -1,6 +1,24 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    dirs: ['src'],
+    ignoreDuringBuilds: true,
+  },
   reactStrictMode: true,
-}
+  webpack: (config) => {
+    config.resolve.fallback = {
+      fs: false,
+      path: false,
+      stream: false,
+      crypto: false,
+    };
 
-module.exports = nextConfig
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+
+    return config;
+  },
+};
+
+module.export = nextConfig;
