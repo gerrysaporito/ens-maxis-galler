@@ -1,10 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { unknown, z } from 'zod';
+import { z } from 'zod';
 
 import { isValidContractAddress } from '@app/interface/blockchain';
 import type { FunctionReturnType } from '@app/interface/FunctionReturnType';
 import { errorReturnValue } from '@app/interface/FunctionReturnType';
-import type { INft } from '@app/interface/nft';
 import { handleError } from '@app/lib/handleError';
 import { logRequestParams } from '@app/lib/logRequestParams';
 import { readNftData } from '@app/lib/readNftData';
