@@ -178,8 +178,12 @@ const handleGetFetchNfts = async (
     }
   } catch {}
 
+  const parsedNfts = Array.from(nfts)
+    .map((nft) => JSON.parse(nft) as INft)
+    .sort((nftA, nftB) => nftA.token_id - nftB.token_id);
+
   saveDataToFile({
-    nfts: Array.from(nfts).map((nft) => JSON.parse(nft) as INft),
+    nfts: parsedNfts,
     contractAddress,
   });
 

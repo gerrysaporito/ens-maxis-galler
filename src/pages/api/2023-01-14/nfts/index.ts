@@ -5,6 +5,21 @@ import { isValidContractAddress } from '@app/interface/blockchain';
 import type { FunctionReturnType } from '@app/interface/FunctionReturnType';
 import { errorReturnValue } from '@app/interface/FunctionReturnType';
 import type { INft } from '@app/interface/nft';
+import {
+  NftAccessory,
+  NftAvatar,
+  NftBackground,
+  NftBody,
+  NftClothing,
+  NftEyes,
+  NftEyewear,
+  NftHair,
+  NftHead,
+  NftHeadwear,
+  NftMaxisRing,
+  NftMouth,
+  NftNose,
+} from '@app/interface/nft';
 import { handleError } from '@app/lib/handleError';
 import { logRequestParams } from '@app/lib/logRequestParams';
 import { readNftData } from '@app/lib/readNftData';
@@ -14,10 +29,29 @@ import { readNftData } from '@app/lib/readNftData';
  * Endpoint's Relevent Interfaces
  * ==============================
  */
-const GetNftsBodySchema = z.object({
+const PostNftsBodySchema = z.object({
   contractAddress: z.string(),
-  metadata: z.unknown(),
+  pageNumber: z.number().optional(),
+  limitPerPage: z.number().optional(),
+  attributes: z
+    .object({
+      Avatar: z.enum(NftAvatar).optional(),
+      Background: z.enum(NftBackground).optional(),
+      'Maxis Ring': z.enum(NftMaxisRing).optional(),
+      Body: z.enum(NftBody).optional(),
+      Head: z.enum(NftHead).optional(),
+      Eyes: z.enum(NftEyes).optional(),
+      Mouth: z.enum(NftMouth).optional(),
+      Hair: z.enum(NftHair).optional(),
+      Clothing: z.enum(NftClothing).optional(),
+      Nose: z.enum(NftNose).optional(),
+      Eyewear: z.enum(NftEyewear).optional(),
+      Accessory: z.enum(NftAccessory).optional(),
+      Headwear: z.enum(NftHeadwear).optional(),
+    })
+    .optional(),
 });
+type PostNftsBodyType = z.infer<typeof PostNftsBodySchema>;
 
 export interface IGetNfts {
   nfts: INft[];
@@ -76,13 +110,13 @@ export default async (
 const handlePostNfts = async (
   req: NextApiRequest,
 ): Promise<FunctionReturnType<IGetNfts>> => {
-  const query = GetNftsBodySchema.safeParse(req.body);
+  const body = PostNftsBodySchema.safeParse(req.body);
 
-  if (!query.success) {
-    const error = `Failed to validate request query`;
-    return errorReturnValue({ error, info: query.error.format() });
+  if (!body.success) {
+    const error = `Failed to validate request body`;
+    return errorReturnValue({ error, info: body.error.format() });
   }
-  const { contractAddress } = query.data;
+  const { contractAddress, attributes, pageNumber, limitPerPage } = body.data;
 
   // Check if contract address passed is valid.
   const validContractAddressResult = isValidContractAddress(contractAddress);
@@ -96,23 +130,46 @@ const handlePostNfts = async (
   }
   const { nfts } = fileDataResult.data;
 
-  getAllMetadataProperties(nfts);
-  // const nft = nfts.filter((_nft) => _nft.token_id === parseInt(tokenId));
-  // if (nft.length === 0) {
-  //   const error = `No NFT found with tokenId: '${tokenId}'`;
-  //   return errorReturnValue({ error });
-  // }
+  let filteredNfts = filterNftsByAttributes({
+    nfts,
+    search: attributes,
+  });
 
-  return { success: true, data: { nfts } };
+  if (pageNumber && limitPerPage) {
+    filteredNfts = filteredNfts.slice(
+      (pageNumber - 1) * limitPerPage,
+      pageNumber * limitPerPage,
+    );
+  }
+
+  return { success: true, data: { nfts: filteredNfts } };
 };
 
-const getAllMetadataProperties = (nfts: INft[]) => {
-  const metadata = nfts.map((nft) => nft.metadata);
-  const properties = new Set<string>();
-  metadata.forEach((nft) =>
-    nft.attributes.forEach((attribute) => {
-      properties.add(attribute.trait_type);
-    }),
-  );
-  console.log(properties);
+/**
+ * ====================================
+ * Endpoint Handlers' Utility Functions
+ * ====================================
+ */
+// UTILITY: Get NFTs whose attributes match the search attribute params.
+const filterNftsByAttributes = ({
+  nfts,
+  search,
+}: {
+  nfts: INft[];
+  search: PostNftsBodyType['attributes'];
+}) => {
+  return nfts.filter((nft) => {
+    let match = true;
+    if (search) {
+      for (const key of Object.keys(search)) {
+        const _key = key as keyof INft['metadata']['attributes'];
+        const nftAttr = nft.metadata.attributes[_key];
+        const searchAttr = search[_key];
+        if (nftAttr !== searchAttr) {
+          match = false;
+        }
+      }
+    }
+    return match;
+  });
 };

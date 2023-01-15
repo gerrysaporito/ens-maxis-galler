@@ -1,4 +1,4 @@
-const nextConfig = {
+module.export = {
   eslint: {
     dirs: ['src'],
     ignoreDuringBuilds: true,
@@ -20,5 +20,3 @@ const nextConfig = {
     return config;
   },
 };
-
-module.export = nextConfig;

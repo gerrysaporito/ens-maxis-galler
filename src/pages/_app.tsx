@@ -1,5 +1,6 @@
-import type { AppProps } from 'next/app'
-import { ChakraProvider } from '@chakra-ui/react'
+import { ChakraProvider } from '@chakra-ui/react';
+import type { AppProps } from 'next/app';
+
 import LocalStorage from '@app/models/LocalStorage';
 
 const initializeLocalStorage = () => {
@@ -8,7 +9,7 @@ const initializeLocalStorage = () => {
     let storageSupported = false;
     try {
       storageSupported = !!window.localStorage;
-    } catch (e) { }
+    } catch (e) {}
 
     // If not supported, replace localStorage and sessionStorage to in-memory map storage.
     if (!storageSupported) {
@@ -16,7 +17,7 @@ const initializeLocalStorage = () => {
       Object.defineProperty(window, 'sessionStorage', new LocalStorage());
     }
   }
-}
+};
 
 initializeLocalStorage();
 
@@ -25,5 +26,5 @@ export default function App({ Component, pageProps }: AppProps) {
     <ChakraProvider>
       <Component {...pageProps} />
     </ChakraProvider>
-  )
+  );
 }
