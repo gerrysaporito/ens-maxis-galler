@@ -15,3 +15,18 @@ export const getContractChainFromContractAddress = (
   const error = 'No chain name associated with the contract address provided.';
   return errorReturnValue({ error });
 };
+
+export const isValidContractAddress = (
+  contractAddress: string,
+): FunctionReturnType<boolean> => {
+  const validContractAddresses = new Set([ENS_MAXIS_CONTRACT_ADDRESS]);
+  if (!validContractAddresses.has(contractAddress)) {
+    const validAddressesString = Array.from(validContractAddresses)
+      .map((v) => `'${v}'`)
+      .join(', ');
+    const error = `Invalid contract address received. It should be one of the following: '${validAddressesString}'`;
+    return errorReturnValue({ error });
+  }
+
+  return { success: true, data: true };
+};

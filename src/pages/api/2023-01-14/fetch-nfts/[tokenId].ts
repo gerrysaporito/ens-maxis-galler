@@ -1,29 +1,26 @@
-import type { EvmNft } from '@moralisweb3/common-evm-utils';
-import { EvmChain } from '@moralisweb3/common-evm-utils';
-import Moralis from 'moralis';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 
-import { ENS_MAXIS_CONTRACT_ADDRESS } from '@app/interface/constants';
+import { isValidContractAddress } from '@app/interface/blockchain';
 import type { FunctionReturnType } from '@app/interface/FunctionReturnType';
 import { errorReturnValue } from '@app/interface/FunctionReturnType';
+import type { INft } from '@app/interface/nft';
 import { handleError } from '@app/lib/handleError';
 import { logRequestParams } from '@app/lib/logRequestParams';
+import { readNftData } from '@app/lib/readNftData';
 
 /**
  * ==============================
  * Endpoint's Relevent Interfaces
  * ==============================
  */
-const MORALIS_API_KEY = process.env.MORALIS_API_KEY ?? '';
-const GetFetchNftsQuerySchema = z.object({
+const GetFetchSingleNftQuerySchema = z.object({
+  tokenId: z.string(),
   contractAddress: z.string(),
-  pageNumber: z.number().optional(),
-  countPerPage: z.number().optional(),
 });
 
-export interface IGetFetchNfts {
-  nfts: EvmNft[];
+export interface IGetFetchNft {
+  nft: INft;
 }
 
 /**
@@ -34,7 +31,7 @@ export interface IGetFetchNfts {
  */
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<FunctionReturnType<IGetFetchNfts>>,
+  res: NextApiResponse<FunctionReturnType<IGetFetchNft>>,
 ): Promise<void> => {
   logRequestParams(req);
 
@@ -78,52 +75,31 @@ export default async (
 // GET: Gets a single NFT by token id found in path.
 const handleGetFetchNfts = async (
   req: NextApiRequest,
-): Promise<FunctionReturnType<IGetFetchNfts>> => {
-  const query = GetFetchNftsQuerySchema.safeParse(req.query);
+): Promise<FunctionReturnType<IGetFetchNft>> => {
+  const query = GetFetchSingleNftQuerySchema.safeParse(req.query);
 
   if (!query.success) {
-    const error = `Failed to validate request query: '${query.error}'`;
-    return errorReturnValue({ error });
+    const error = `Failed to validate request query`;
+    return errorReturnValue({ error, info: query.error.format() });
   }
-  const { contractAddress, pageNumber, countPerPage } = query.data;
+  const { tokenId, contractAddress } = query.data;
 
-  // In case the endpoint should be used for different contract addresses in future.
-  const validContractAddresses = new Set([ENS_MAXIS_CONTRACT_ADDRESS]);
-  if (!validContractAddresses.has(contractAddress)) {
-    const validAddressesString = Array.from(validContractAddresses)
-      .map((v) => `'${v}'`)
-      .join(', ');
-    const error = `Invalid contract address received. It should be on eof the following: '${validAddressesString}'`;
-    return errorReturnValue({ error });
+  // Check if contract address passed is valid.
+  const validContractAddressResult = isValidContractAddress(contractAddress);
+  if (!validContractAddressResult.success) {
+    return validContractAddressResult;
   }
 
-  const totalRanges = 1000;
-  const range = 1;
+  const fileDataResult = readNftData(contractAddress);
+  if (!fileDataResult.success) {
+    return fileDataResult;
+  }
+  const { nfts } = fileDataResult.data;
 
-  await Moralis.start({ apiKey: MORALIS_API_KEY });
-
-  const { result } = await Moralis.EvmApi.nft.getContractNFTs({
-    address: contractAddress,
-    chain: EvmChain.ETHEREUM,
-    totalRanges,
-    range,
-  });
-
-  //   const data = await fetchClient({
-  //     method: 'get',
-  //     headers: {
-  //       'X-API-Key': MORALIS_API_KEY,
-  //     },
-  //     endpoint:
-  //       'https://deep-index.moralis.io/api/v2/nft/0xaa462106da447c0440a4be29614c19387a59a331/5021?chain=0x1',
-  //   });
-
-  return { success: true, data: { nfts: result } };
+  const nft = nfts.filter((_nft) => _nft.token_id === parseInt(tokenId));
+  if (nft.length === 0) {
+    const error = `No NFT found with tokenId: ${tokenId}`;
+    return errorReturnValue({ error });
+  }
+  return { success: true, data: { nft: nft[0] } };
 };
-
-/**
- * ====================================
- * Endpoint Handlers' Utility Functions
- * ====================================
- */
-// UTILITY: Some function goes here.

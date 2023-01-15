@@ -5,7 +5,7 @@ import Moralis from 'moralis';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 
-import { ENS_MAXIS_CONTRACT_ADDRESS } from '@app/interface/constants';
+import { isValidContractAddress } from '@app/interface/blockchain';
 import type { FunctionReturnType } from '@app/interface/FunctionReturnType';
 import { errorReturnValue } from '@app/interface/FunctionReturnType';
 import type { INft } from '@app/interface/nft';
@@ -110,6 +110,12 @@ const handleGetFetchNfts = async (
   }
   const { contractAddress } = query.data;
 
+  // Check if contract address passed is valid.
+  const validContractAddressResult = isValidContractAddress(contractAddress);
+  if (!validContractAddressResult.success) {
+    return validContractAddressResult;
+  }
+
   // Check to see if we've recently queried the data.
   const fileDataResult = readNftData(contractAddress);
   if (!fileDataResult.success) {
@@ -127,16 +133,6 @@ const handleGetFetchNfts = async (
       (new Date(nextRequestPeriodStart).getTime() - new Date().getTime()) /
       1000;
     const error = `You must wait ${diffSeconds} seconds attempting to update the nft list again.`;
-    return errorReturnValue({ error });
-  }
-
-  // In case the endpoint should be used for different contract addresses in future.
-  const validContractAddresses = new Set([ENS_MAXIS_CONTRACT_ADDRESS]);
-  if (!validContractAddresses.has(contractAddress)) {
-    const validAddressesString = Array.from(validContractAddresses)
-      .map((v) => `'${v}'`)
-      .join(', ');
-    const error = `Invalid contract address received. It should be one of the following: '${validAddressesString}'`;
     return errorReturnValue({ error });
   }
 
