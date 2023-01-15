@@ -8,10 +8,13 @@ import { z } from 'zod';
 import { ENS_MAXIS_CONTRACT_ADDRESS } from '@app/interface/constants';
 import type { FunctionReturnType } from '@app/interface/FunctionReturnType';
 import { errorReturnValue } from '@app/interface/FunctionReturnType';
+import type { INft } from '@app/interface/nft';
 import { getFileLocation } from '@app/interface/routes';
 import { asyncDelayMs } from '@app/lib/asyncDelayMs';
 import { handleError } from '@app/lib/handleError';
 import { logRequestParams } from '@app/lib/logRequestParams';
+import type { IFileDataFormat } from '@app/lib/readNftData';
+import { readNftData } from '@app/lib/readNftData';
 
 /**
  * ==============================
@@ -30,9 +33,20 @@ export interface IGetFetchNfts {
   countUpdated: number;
 }
 
-interface IFileDataFormat {
-  updatedAt: Date;
-  nfts: unknown;
+interface IMoralisNftResponseSchema {
+  token_address: string;
+  token_id: string;
+  amount?: string;
+  token_hash?: string;
+  block_number_minted?: string;
+  contract_type?: string;
+  name?: string;
+  symbol?: string;
+  token_uri?: string;
+  metadata?: string;
+  last_token_uri_sync?: string;
+  last_metadata_sync?: string;
+  minter_address?: string;
 }
 
 /**
@@ -97,13 +111,12 @@ const handleGetFetchNfts = async (
   const { contractAddress } = query.data;
 
   // Check to see if we've recently queried the data.
-  const fileLocationResult = getFileLocation(contractAddress);
-  if (!fileLocationResult.success) {
-    return fileLocationResult;
+  const fileDataResult = readNftData(contractAddress);
+  if (!fileDataResult.success) {
+    return fileDataResult;
   }
-  const fileLocation = fileLocationResult.data;
-  const nftDataBuffer = fs.readFileSync(fileLocation, 'utf-8');
-  const nftData = JSON.parse(nftDataBuffer) as IFileDataFormat;
+  const nftData = fileDataResult.data;
+
   const lastUpdated = new Date(nftData.updatedAt);
   const nextRequestPeriodStart = lastUpdated.setMilliseconds(
     lastUpdated.getMilliseconds() + 1000 * 60 * 5, // 5 minutes
@@ -145,7 +158,10 @@ const handleGetFetchNfts = async (
       const { result, cursor: _cursor } = response.toJSON();
       cursor = _cursor;
       if (result) {
-        result.forEach((nft) => nfts.add(JSON.stringify(nft)));
+        const _nfts = formatMoralisNftResponse(result).map((nft) =>
+          JSON.stringify(nft),
+        );
+        _nfts.forEach((nft) => nfts.add(nft));
       }
 
       // Avoid rate limiting.
@@ -155,7 +171,7 @@ const handleGetFetchNfts = async (
 
   console.log({ size: nfts.size });
   saveDataToFile({
-    nfts: Array.from(nfts).map((nft) => JSON.parse(nft)),
+    nfts: Array.from(nfts).map((nft) => JSON.parse(nft) as INft),
     contractAddress,
   });
 
@@ -167,12 +183,38 @@ const handleGetFetchNfts = async (
  * Endpoint Handlers' Utility Functions
  * ====================================
  */
+// UTILITY: Format response from Moralis to fit nft data schema.
+const formatMoralisNftResponse = (result: IMoralisNftResponseSchema[]) => {
+  return result.map((_nft) => {
+    const nft: INft = {
+      token_address: _nft.token_address ?? '',
+      token_id: parseInt(_nft.token_id),
+      amount: parseInt(_nft.amount ?? '-1'),
+      token_hash: _nft.token_hash ?? '',
+      block_number_minted: _nft.block_number_minted ?? '',
+      contract_type: _nft.contract_type ?? '',
+      name: _nft.name ?? '',
+      symbol: _nft.symbol ?? '',
+      token_uri: _nft.token_uri ?? '',
+      metadata: JSON.parse(_nft.metadata ?? '{}'),
+      last_token_uri_sync: _nft.last_token_uri_sync
+        ? new Date(_nft.last_token_uri_sync)
+        : null,
+      last_metadata_sync: _nft.last_metadata_sync
+        ? new Date(_nft.last_metadata_sync)
+        : null,
+      minter_address: _nft.minter_address ?? '',
+    };
+    return nft;
+  });
+};
+
 // UTILITY: Saves the NFT data to a file. Filename is a combination of the contract chain and address.
 const saveDataToFile = ({
   nfts,
   contractAddress,
 }: {
-  nfts: unknown;
+  nfts: INft[];
   contractAddress: string;
 }): FunctionReturnType<IFileDataFormat> => {
   const data: IFileDataFormat = {
