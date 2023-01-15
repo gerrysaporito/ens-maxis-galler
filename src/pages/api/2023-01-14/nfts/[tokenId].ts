@@ -14,10 +14,11 @@ import { readNftData } from '@app/lib/readNftData';
  * Endpoint's Relevent Interfaces
  * ==============================
  */
-const GetSingleNftQuerySchema = z.object({
+export const GetSingleNftQuerySchema = z.object({
   tokenId: z.string(),
   contractAddress: z.string(),
 });
+export type GetSingleNftQueryType = z.infer<typeof GetSingleNftQuerySchema>;
 
 export interface IGetNft {
   nft: INft;

@@ -15,13 +15,13 @@ import { readNftData } from '@app/lib/readNftData';
  * Endpoint's Relevent Interfaces
  * ==============================
  */
-const PostNftsBodySchema = z.object({
+export const PostNftsBodySchema = z.object({
   contractAddress: z.string(),
   pageNumber: z.number(),
   limitPerPage: z.number(),
   searchAttributes: AttributesSchema.partial().optional(),
 });
-type PostNftsBodyType = z.infer<typeof PostNftsBodySchema>;
+export type PostNftsBodyType = z.infer<typeof PostNftsBodySchema>;
 
 export interface IGetNfts {
   nfts: INft[];

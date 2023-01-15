@@ -1,11 +1,13 @@
 import { z } from 'zod';
 
+import type { FunctionReturnType } from '@app/interface/FunctionReturnType';
 import { BASE_URL } from '@app/interface/routes';
 
+const HttpMethods = ['get', 'post', 'delete'] as const;
 const FetchClientSchema = z.object({
   endpoint: z.string(),
-  method: z.enum(['get', 'post', 'delete']),
-  jsonBody: z.unknown().optional(),
+  method: z.enum(HttpMethods),
+  jsonBody: z.record(z.string(), z.unknown()).optional(),
   headers: z.record(z.string()).optional(),
 });
 type FetchClientType = z.infer<typeof FetchClientSchema>;
@@ -15,15 +17,14 @@ export const fetchClient = async <T>({
   method,
   jsonBody,
   headers = {},
-}: FetchClientType): Promise<T> => {
+}: FetchClientType): Promise<FunctionReturnType<T>> => {
   if (!endpoint.startsWith('/')) {
     throw new Error(`Endpoint must start with '/'`);
   }
 
-  const appUrl =
-    typeof window === 'undefined' ? `${BASE_URL}${endpoint}` : endpoint;
-
-  const url = endpoint.includes('https://') ? appUrl : endpoint;
+  const url = BASE_URL.includes('localhost')
+    ? `${BASE_URL}${endpoint}`
+    : endpoint;
 
   const result = await fetch(url, {
     body: jsonBody ? JSON.stringify(jsonBody) : undefined,
@@ -34,5 +35,5 @@ export const fetchClient = async <T>({
     method,
   });
 
-  return result.json() as T;
+  return result.json();
 };

@@ -1,26 +1,99 @@
-import { Stack } from '@chakra-ui/react';
+import { Heading, Stack, Text } from '@chakra-ui/react';
 import type { GetServerSideProps } from 'next';
+import Head from 'next/head';
+import type { PropsWithChildren } from 'react';
 
+import type { IGetNfts, PostNftsBodyType } from '../api/2023-01-14/nfts';
 import { DocumentHead } from '@app/components/pure/DocumentHead';
+import { ENS_MAXIS_CONTRACT_ADDRESS } from '@app/interface/constants';
+import { QueryParamsSchema } from '@app/interface/custom';
+import type { FunctionReturnType } from '@app/interface/FunctionReturnType';
 import { ROUTE_GET_NFTS_BY_METADATA } from '@app/interface/routes';
 import { fetchClient } from '@app/lib/client';
+import { handleError } from '@app/lib/handleError';
 
-const Gallery: React.FC = () => {
+const Gallery: React.FC<FunctionReturnType<IGetNfts>> = ({ success, data }) => {
+  if (!success) {
+    return (
+      <HighLevelFrame>
+        <Heading>Something went wrong.</Heading>
+        <Text>{data.error}</Text>
+      </HighLevelFrame>
+    );
+  }
+
+  console.log(data.nfts.length);
   return (
     <Stack>
-      <DocumentHead />
+      <Head>
+        <DocumentHead />
+      </Head>
       <Stack>Hello World</Stack>
     </Stack>
   );
 };
 export default Gallery;
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const nfts = await fetchClient({
-    endpoint: ROUTE_GET_NFTS_BY_METADATA,
-    method: 'post',
-    jsonBody: {},
-  });
-  console.log(nfts);
-  return { props: {} };
+const HighLevelFrame: React.FC<PropsWithChildren> = ({ children }) => {
+  return (
+    <Stack>
+      <Head>
+        <DocumentHead />
+      </Head>
+      <Stack>{children}</Stack>
+    </Stack>
+  );
+};
+
+export const getServerSideProps: GetServerSideProps<
+  FunctionReturnType<IGetNfts>
+> = async ({ query }) => {
+  const jsonBody: PostNftsBodyType = {
+    contractAddress: ENS_MAXIS_CONTRACT_ADDRESS,
+    limitPerPage: 100,
+    pageNumber: 1,
+  };
+
+  // Update body params if found
+  const queryResult = QueryParamsSchema.safeParse(query);
+  if (queryResult.success) {
+    jsonBody.limitPerPage = queryResult.data.limitPerPage;
+    jsonBody.pageNumber = queryResult.data.pageNumber;
+  }
+
+  try {
+    const result = await fetchClient<IGetNfts>({
+      endpoint: ROUTE_GET_NFTS_BY_METADATA,
+      method: 'post',
+      jsonBody,
+    });
+    if (!result.success) {
+      return {
+        props: {
+          success: false,
+          data: {
+            error: `Failed to get all NFTs on gallery page load: '${result.data.error}'`,
+          },
+        },
+      };
+    }
+    const { nfts } = result.data;
+
+    return { props: { success: true, data: { nfts } } };
+  } catch (e) {
+    const result = handleError({
+      e,
+      failedTo: 'get all NFTs on gallery page load',
+    });
+
+    const { error } = result.data;
+    return {
+      props: {
+        success: false,
+        data: {
+          error: `Failed to get all NFTs on gallery page load: '${error}'`,
+        },
+      },
+    };
+  }
 };
