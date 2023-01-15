@@ -88,7 +88,6 @@ const handleGetCollectionMetadata = async (
   if (!validContractAddressResult.success) {
     return validContractAddressResult;
   }
-
   const fileDataResult = readNftData(contractAddress);
   if (!fileDataResult.success) {
     return fileDataResult;
@@ -98,11 +97,15 @@ const handleGetCollectionMetadata = async (
   const metadata = nfts.map((nft) => nft.metadata);
   const attributes: { [key: string]: Set<string> } = {};
   metadata.forEach((nft) =>
-    nft.attributes.forEach((attribute) => {
-      if (attribute.trait_type in attributes) {
-        attributes[attribute.trait_type].add(attribute.value);
+    Object.keys(nft.attributes).forEach((attrKey) => {
+      if (attrKey in attributes) {
+        attributes[attrKey].add(
+          nft.attributes[attrKey as keyof typeof nft.attributes],
+        );
       } else {
-        attributes[attribute.trait_type] = new Set([attribute.value]);
+        attributes[attrKey] = new Set([
+          nft.attributes[attrKey as keyof typeof nft.attributes],
+        ]);
       }
     }),
   );

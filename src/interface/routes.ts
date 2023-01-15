@@ -20,6 +20,6 @@ export const getFileLocation = (
   }
   const contractChain = result.data;
   const rootDir = process.cwd();
-  const location = `/src/data/${contractChain}-${contractAddress}.json`;
+  const location = `/src/data/${contractChain.toLowerCase()}-${contractAddress.toLowerCase()}.json`;
   return { success: true, data: join(rootDir, location) };
 };

@@ -1,15 +1,17 @@
-import { EvmChain } from '@moralisweb3/common-evm-utils';
-
 import { ENS_MAXIS_CONTRACT_ADDRESS } from './constants';
 import type { FunctionReturnType } from './FunctionReturnType';
 import { errorReturnValue } from './FunctionReturnType';
+
+export enum ChainName {
+  ETHEREUM = 'Ethereum',
+}
 
 export const getContractChainFromContractAddress = (
   contractAddress: string,
 ): FunctionReturnType<string> => {
   switch (contractAddress) {
     case ENS_MAXIS_CONTRACT_ADDRESS:
-      return { success: true, data: EvmChain.ETHEREUM.name ?? '' };
+      return { success: true, data: ChainName.ETHEREUM };
   }
 
   const error = 'No chain name associated with the contract address provided.';

@@ -22,10 +22,14 @@ export const readNftData = (
   if (!fileLocationResult.success) {
     return fileLocationResult;
   }
-
   const fileLocation = fileLocationResult.data;
-  const nftDataBuffer = fs.readFileSync(fileLocation, 'utf-8');
-  const nftData = JSON.parse(nftDataBuffer) as IFileDataFormat;
 
-  return { success: true, data: nftData };
+  try {
+    const nftDataBuffer = fs.readFileSync(fileLocation, 'utf-8');
+    const nftData = JSON.parse(nftDataBuffer) as IFileDataFormat;
+    return { success: true, data: nftData };
+  } catch (e) {
+    const error = `Failed to read file located at: '${fileLocation}'`;
+    return errorReturnValue({ error });
+  }
 };

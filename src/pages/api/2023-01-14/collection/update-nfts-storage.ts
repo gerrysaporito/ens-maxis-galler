@@ -60,7 +60,6 @@ export default async (
   res: NextApiResponse<FunctionReturnType<IGetFetchNfts>>,
 ): Promise<void> => {
   logRequestParams(req);
-
   try {
     switch (req.method?.toLowerCase()) {
       case 'get': {
@@ -103,13 +102,14 @@ export default async (
 const handleGetFetchNfts = async (
   req: NextApiRequest,
 ): Promise<FunctionReturnType<IGetFetchNfts>> => {
+  // Only callable on dev server.
   if (process.env.VERCEL_ENV !== 'development') {
     const error = 'This endpoint can only be called on a development server.';
     return errorReturnValue({ error });
   }
 
+  // Verify query params.
   const query = GetFetchNftsQuerySchema.safeParse(req.query);
-
   if (!query.success) {
     const error = `Failed to validate request query: '${query.error}'`;
     return errorReturnValue({ error });
@@ -125,21 +125,28 @@ const handleGetFetchNfts = async (
   // Check to see if we've recently queried the data.
   const fileDataResult = readNftData(contractAddress);
   if (!fileDataResult.success) {
-    return fileDataResult;
+    if (!fileDataResult.data.error.includes('Failed to read file located at')) {
+      return fileDataResult;
+    }
   }
-  const nftData = fileDataResult.data;
 
-  const lastUpdated = new Date(nftData.updatedAt);
-  const nextRequestPeriodStart = lastUpdated.setMilliseconds(
-    lastUpdated.getMilliseconds() + 1000 * 60 * 5, // 5 minutes
-  );
+  // Only run checks if there is an nfts file that already exists.
+  if (fileDataResult.success) {
+    const nftData = fileDataResult.data;
 
-  if (!isPast(nextRequestPeriodStart)) {
-    const diffSeconds =
-      (new Date(nextRequestPeriodStart).getTime() - new Date().getTime()) /
-      1000;
-    const error = `You must wait ${diffSeconds} seconds attempting to update the nft list again.`;
-    return errorReturnValue({ error });
+    const lastUpdated = new Date(nftData.updatedAt);
+    const nextRequestPeriodStart = lastUpdated.setMilliseconds(
+      lastUpdated.getMilliseconds() + 1000 * 60 * 60 * 24, // 1 day
+    );
+
+    // Check if a fair amount of time has passed since our last check to reduce cost of updating nfts data.
+    if (!isPast(nextRequestPeriodStart)) {
+      const diffSeconds =
+        (new Date(nextRequestPeriodStart).getTime() - new Date().getTime()) /
+        1000;
+      const error = `You must wait ${diffSeconds} seconds attempting to update the nft list again.`;
+      return errorReturnValue({ error });
+    }
   }
 
   const nfts = new Set<string>();
@@ -147,9 +154,8 @@ const handleGetFetchNfts = async (
   // Query nft metadata for the contract.
   let cursor: string | undefined;
   try {
+    console.info(`Queried: 0 / 10,000`);
     for (let i = 0; i < 10_000 / QUERY_LIMIT; ++i) {
-      console.log('Count:', QUERY_LIMIT * i);
-
       const response = await Moralis.EvmApi.nft.getContractNFTs({
         address: contractAddress,
         chain: EvmChain.ETHEREUM,
@@ -166,12 +172,12 @@ const handleGetFetchNfts = async (
         _nfts.forEach((nft) => nfts.add(nft));
       }
 
-      // Avoid rate limiting.
-      await asyncDelayMs(1000); // 1 seconds
+      // Avoid rate limiting
+      await asyncDelayMs(500);
+      console.info(`Queried: ${QUERY_LIMIT * (i + 1)} / 10,000`);
     }
   } catch {}
 
-  console.log({ size: nfts.size });
   saveDataToFile({
     nfts: Array.from(nfts).map((nft) => JSON.parse(nft) as INft),
     contractAddress,
@@ -188,6 +194,17 @@ const handleGetFetchNfts = async (
 // UTILITY: Format response from Moralis to fit nft data schema.
 const formatMoralisNftResponse = (result: IMoralisNftResponseSchema[]) => {
   return result.map((_nft) => {
+    const _metadata = JSON.parse(_nft.metadata ?? '{}');
+    const attributes: { [key: string]: string } = {};
+    _metadata.attributes.forEach(
+      (attribute: { trait_type: string; value: string }) => {
+        if (!(attribute.trait_type in attributes)) {
+          attributes[attribute.trait_type] = '';
+        }
+        attributes[attribute.trait_type] = attribute.value;
+      },
+    );
+
     const nft: INft = {
       token_address: _nft.token_address ?? '',
       token_id: parseInt(_nft.token_id),
@@ -198,7 +215,7 @@ const formatMoralisNftResponse = (result: IMoralisNftResponseSchema[]) => {
       name: _nft.name ?? '',
       symbol: _nft.symbol ?? '',
       token_uri: _nft.token_uri ?? '',
-      metadata: JSON.parse(_nft.metadata ?? '{}'),
+      metadata: { ..._metadata, attributes },
       last_token_uri_sync: _nft.last_token_uri_sync
         ? new Date(_nft.last_token_uri_sync)
         : null,
