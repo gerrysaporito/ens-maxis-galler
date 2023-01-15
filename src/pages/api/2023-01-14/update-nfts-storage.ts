@@ -102,6 +102,11 @@ export default async (
 const handleGetFetchNfts = async (
   req: NextApiRequest,
 ): Promise<FunctionReturnType<IGetFetchNfts>> => {
+  if (process.env.VERCEL_ENV !== 'development') {
+    const error = 'This endpoint can only be called on a development server.';
+    return errorReturnValue({ error });
+  }
+
   const query = GetFetchNftsQuerySchema.safeParse(req.query);
 
   if (!query.success) {
