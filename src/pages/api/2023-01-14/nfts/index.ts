@@ -5,21 +5,7 @@ import { isValidContractAddress } from '@app/interface/blockchain';
 import type { FunctionReturnType } from '@app/interface/FunctionReturnType';
 import { errorReturnValue } from '@app/interface/FunctionReturnType';
 import type { INft } from '@app/interface/nft';
-import {
-  NftAccessory,
-  NftAvatar,
-  NftBackground,
-  NftBody,
-  NftClothing,
-  NftEyes,
-  NftEyewear,
-  NftHair,
-  NftHead,
-  NftHeadwear,
-  NftMaxisRing,
-  NftMouth,
-  NftNose,
-} from '@app/interface/nft';
+import { AttributesSchema } from '@app/interface/nft';
 import { handleError } from '@app/lib/handleError';
 import { logRequestParams } from '@app/lib/logRequestParams';
 import { readNftData } from '@app/lib/readNftData';
@@ -33,23 +19,7 @@ const PostNftsBodySchema = z.object({
   contractAddress: z.string(),
   pageNumber: z.number().optional(),
   limitPerPage: z.number().optional(),
-  attributes: z
-    .object({
-      Avatar: z.enum(NftAvatar).optional(),
-      Background: z.enum(NftBackground).optional(),
-      'Maxis Ring': z.enum(NftMaxisRing).optional(),
-      Body: z.enum(NftBody).optional(),
-      Head: z.enum(NftHead).optional(),
-      Eyes: z.enum(NftEyes).optional(),
-      Mouth: z.enum(NftMouth).optional(),
-      Hair: z.enum(NftHair).optional(),
-      Clothing: z.enum(NftClothing).optional(),
-      Nose: z.enum(NftNose).optional(),
-      Eyewear: z.enum(NftEyewear).optional(),
-      Accessory: z.enum(NftAccessory).optional(),
-      Headwear: z.enum(NftHeadwear).optional(),
-    })
-    .optional(),
+  attributes: AttributesSchema.partial(),
 });
 type PostNftsBodyType = z.infer<typeof PostNftsBodySchema>;
 
