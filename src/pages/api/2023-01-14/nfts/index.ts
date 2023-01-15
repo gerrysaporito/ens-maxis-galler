@@ -17,9 +17,9 @@ import { readNftData } from '@app/lib/readNftData';
  */
 const PostNftsBodySchema = z.object({
   contractAddress: z.string(),
-  pageNumber: z.number().optional(),
-  limitPerPage: z.number().optional(),
-  attributes: AttributesSchema.partial(),
+  pageNumber: z.number(),
+  limitPerPage: z.number(),
+  searchAttributes: AttributesSchema.partial().optional(),
 });
 type PostNftsBodyType = z.infer<typeof PostNftsBodySchema>;
 
@@ -86,7 +86,8 @@ const handlePostNfts = async (
     const error = `Failed to validate request body`;
     return errorReturnValue({ error, info: body.error.format() });
   }
-  const { contractAddress, attributes, pageNumber, limitPerPage } = body.data;
+  const { contractAddress, searchAttributes, pageNumber, limitPerPage } =
+    body.data;
 
   // Check if contract address passed is valid.
   const validContractAddressResult = isValidContractAddress(contractAddress);
@@ -100,19 +101,28 @@ const handlePostNfts = async (
   }
   const { nfts } = fileDataResult.data;
 
-  let filteredNfts = filterNftsByAttributes({
-    nfts,
-    search: attributes,
-  });
-
-  if (pageNumber && limitPerPage) {
-    filteredNfts = filteredNfts.slice(
-      (pageNumber - 1) * limitPerPage,
-      pageNumber * limitPerPage,
-    );
+  // If no search attributes passed, return all NFTs for that page.
+  if (!searchAttributes) {
+    return {
+      success: true,
+      data: {
+        nfts: getNftsForPage({ nfts, pageNumber, limitPerPage }),
+      },
+    };
   }
 
-  return { success: true, data: { nfts: filteredNfts } };
+  // There were search attributes passed so search for them and return for that page.
+  const filteredNfts = filterNftsByAttributes({
+    nfts,
+    search: searchAttributes,
+  });
+
+  return {
+    success: true,
+    data: {
+      nfts: getNftsForPage({ nfts: filteredNfts, pageNumber, limitPerPage }),
+    },
+  };
 };
 
 /**
@@ -126,13 +136,13 @@ const filterNftsByAttributes = ({
   search,
 }: {
   nfts: INft[];
-  search: PostNftsBodyType['attributes'];
+  search: PostNftsBodyType['searchAttributes'];
 }) => {
   return nfts.filter((nft) => {
     let match = true;
     if (search) {
       for (const key of Object.keys(search)) {
-        const _key = key as keyof INft['metadata']['attributes'];
+        const _key = key as keyof typeof search;
         const nftAttr = nft.metadata.attributes[_key];
         const searchAttr = search[_key];
         if (nftAttr !== searchAttr) {
@@ -143,3 +153,14 @@ const filterNftsByAttributes = ({
     return match;
   });
 };
+
+// UTILITY: Get NFTs within the page range.
+const getNftsForPage = ({
+  nfts,
+  pageNumber,
+  limitPerPage,
+}: {
+  nfts: INft[];
+  pageNumber: number;
+  limitPerPage: number;
+}) => nfts.slice((pageNumber - 1) * limitPerPage, pageNumber * limitPerPage);

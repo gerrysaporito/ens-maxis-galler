@@ -10,6 +10,9 @@ export const BASE_URL =
     : 'http://localhost:3000';
 
 export const ROUTE_GALLERY = '/gallery';
+export const ROUTE_GET_NFTS_BY_METADATA = '/api/2023-01-14/nfts';
+export const ROUTE_GET_NFT = (tokenId: string | number) =>
+  `/api/2023-01-14/nfts/${tokenId}`;
 
 export const getFileLocation = (
   contractAddress: string,
