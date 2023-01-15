@@ -16,6 +16,10 @@ export const fetchClient = async <T>({
   jsonBody,
   headers = {},
 }: FetchClientType): Promise<T> => {
+  if (!endpoint.startsWith('/')) {
+    throw new Error(`Endpoint must start with '/'`);
+  }
+
   const appUrl =
     typeof window === 'undefined' ? `${BASE_URL}${endpoint}` : endpoint;
 

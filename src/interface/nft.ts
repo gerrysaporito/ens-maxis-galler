@@ -8,8 +8,37 @@ export interface INft {
   name: string;
   symbol: string;
   token_uri: string;
-  metadata: Record<string, unknown>;
+  metadata: INftMetadata;
   last_token_uri_sync: Date | null;
   last_metadata_sync: Date | null;
   minter_address: string;
 }
+
+export interface INftMetadata {
+  attributes: {
+    trait_type: (typeof TraitTypes)[number];
+    value: string;
+  }[];
+  compiler: string;
+  description: string;
+  dna: string;
+  edition: number;
+  image: string;
+  name: string;
+}
+
+const TraitTypes = [
+  'Avatar',
+  'Background',
+  'Maxis Ring',
+  'Body',
+  'Head',
+  'Eyes',
+  'Mouth',
+  'Hair',
+  'Clothing',
+  'Nose',
+  'Eyewear',
+  'Accessory',
+  'Headwear',
+] as const;
