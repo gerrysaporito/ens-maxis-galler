@@ -79,7 +79,8 @@ export default async (
   } catch (e) {
     const result = handleError({
       e,
-      failedTo: 'make api request to /api/2023-01-14/update-nfts-storage',
+      failedTo:
+        'make api request to /api/2023-01-14/collection/update-nfts-storage',
     });
 
     if (result.success) {

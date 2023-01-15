@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { unknown, z } from 'zod';
+import { z } from 'zod';
 
 import { isValidContractAddress } from '@app/interface/blockchain';
 import type { FunctionReturnType } from '@app/interface/FunctionReturnType';

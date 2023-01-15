@@ -16,7 +16,7 @@ export interface INft {
 
 export interface INftMetadata {
   attributes: {
-    trait_type: (typeof TraitTypes)[number];
+    trait_type: (typeof TraitTypesConst)[number];
     value: string;
   }[];
   compiler: string;
@@ -27,7 +27,7 @@ export interface INftMetadata {
   name: string;
 }
 
-const TraitTypes = [
+const TraitTypesConst = [
   'Avatar',
   'Background',
   'Maxis Ring',
@@ -42,3 +42,4 @@ const TraitTypes = [
   'Accessory',
   'Headwear',
 ] as const;
+export const TraitTypes = new Set(TraitTypesConst);

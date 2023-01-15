@@ -20,7 +20,7 @@ const GetNftsBodySchema = z.object({
 });
 
 export interface IGetNfts {
-  attributes: Set<string>;
+  attributes: Record<string, string[]>;
 }
 
 /**
@@ -38,7 +38,7 @@ export default async (
   try {
     switch (req.method?.toLowerCase()) {
       case 'get': {
-        const result = await handleGetNfts(req);
+        const result = await handleGetCollectionMetadata(req);
         return res.status(result.data ? 200 : 400).json(result);
       }
       default: {
@@ -53,7 +53,7 @@ export default async (
   } catch (e) {
     const result = handleError({
       e,
-      failedTo: 'make api request to /api/2023-01-14/nfts',
+      failedTo: 'make api request to /api/2023-01-14/collection/attributes',
     });
 
     if (result.success) {
@@ -73,7 +73,7 @@ export default async (
  * ===================
  */
 // GET: Gets a single NFT by token id found in path.
-const handleGetNfts = async (
+const handleGetCollectionMetadata = async (
   req: NextApiRequest,
 ): Promise<FunctionReturnType<IGetNfts>> => {
   const query = GetNftsBodySchema.safeParse(req.body);
@@ -97,12 +97,22 @@ const handleGetNfts = async (
   const { nfts } = fileDataResult.data;
 
   const metadata = nfts.map((nft) => nft.metadata);
-  const attributes = new Set<string>();
+  const attributes: { [key: string]: Set<string> } = {};
   metadata.forEach((nft) =>
     nft.attributes.forEach((attribute) => {
-      attributes.add(attribute.trait_type);
+      if (attribute.trait_type in attributes) {
+        attributes[attribute.trait_type].add(attribute.value);
+      } else {
+        attributes[attribute.trait_type] = new Set([attribute.value]);
+      }
     }),
   );
 
-  return { success: true, data: { attributes } };
+  const attr = Object.keys(attributes).reduce((store, key) => {
+    const tempStore = store;
+    tempStore[key] = Array.from(attributes[key]);
+    return tempStore;
+  }, {} as Record<string, string[]>);
+
+  return { success: true, data: { attributes: attr } };
 };
