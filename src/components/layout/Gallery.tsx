@@ -31,7 +31,6 @@ import type {
 const AttributesObject = Attributes.toObject();
 
 interface IGallery {
-  nfts: INft[];
   searchAttributes: Partial<{
     [key in keyof typeof AttributesObject]: string[];
   }>;
@@ -45,12 +44,11 @@ interface IGallery {
 }
 
 export const Gallery: React.FC<IGallery> = ({
-  nfts: _nfts,
   searchAttributes,
   setSearchAttributes,
 }) => {
-  const [nfts, setNfts] = useState(_nfts);
-  const [isLoading, setIsLoading] = useState(false);
+  const [nfts, setNfts] = useState<INft[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [orderType, setOrderType] = useState(OrderType.ASC);
   const [searchTerm, setSearchTerm] = useState('');
   const [reload, setReload] = useState(false);

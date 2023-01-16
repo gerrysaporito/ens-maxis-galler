@@ -7,13 +7,9 @@ import type { INft } from '@app/interface/nft';
 import { Filter } from './Filter';
 import { Gallery } from './Gallery';
 
-interface IPageLayout {
-  nfts: INft[];
-}
-
 const AttributesObject = Attributes.toObject();
 
-export const PageLayout: React.FC<IPageLayout> = ({ nfts }) => {
+export const PageLayout: React.FC = () => {
   // Attributes used to search NFTs for.
   const [searchAttributes, setSearchAttributes] = useState<
     Partial<{
@@ -39,7 +35,6 @@ export const PageLayout: React.FC<IPageLayout> = ({ nfts }) => {
         overflowY='scroll'
       >
         <Gallery
-          nfts={nfts}
           searchAttributes={searchAttributes}
           setSearchAttributes={setSearchAttributes}
         />
