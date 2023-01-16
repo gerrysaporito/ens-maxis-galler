@@ -122,11 +122,9 @@ export const Gallery: React.FC<IGallery> = ({
     <Grid
       gap='5'
       h='90vh'
-      sx={{
-        '::-webkit-scrollbar': {
-          display: 'none',
-        },
-      }}
+      pr='10'
+      overflowY='scroll'
+      sx={{ '::-webkit-scrollbar': { display: 'none' } }}
     >
       <Flex>
         <Text as='span' pr='5'>
@@ -163,20 +161,14 @@ export const Gallery: React.FC<IGallery> = ({
           <Spinner />
         </Flex>
       ) : (
-        <Flex
-          flexDirection='column'
-          pt='5'
-          pb='20'
-          justifyContent='center'
-          pr='10'
-          overflowY='scroll'
-          h='100%'
-        >
+        <>
           <SimpleGrid columns={{ sm: 2, md: 4 }} gap='8' flex='1'>
             {cards}
           </SimpleGrid>
-          <PageController />
-        </Flex>
+          <Flex flexDirection='column' pt='5' pb='20' justifyContent='center'>
+            <PageController />
+          </Flex>
+        </>
       )}
     </Grid>
   );

@@ -38,13 +38,13 @@ export const Filter: React.FC<IFilter> = ({
     return (
       <>
         <DropdownCheckbox
-          key={attrKey}
-          label={attrKey}
+          key={key}
+          label={key}
           options={AttributesObject[key]}
           optionsChecked={searchAttributes[key] ?? []}
           setOptionsChecked={updateSearchOptions}
         />
-        <Divider key={attrKey + i.toString()} mt='2' mb='2' />
+        <Divider key={key + i.toString()} mt='2' mb='2' />
       </>
     );
   });
