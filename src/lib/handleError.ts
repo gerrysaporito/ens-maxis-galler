@@ -31,7 +31,7 @@ export const handleError = ({
   }
 
   const log: ILog = { failedTo, error, info, e };
-  console.log(log);
+  console.error(log);
 
   return { success: true, data: { error, info, e } };
 };

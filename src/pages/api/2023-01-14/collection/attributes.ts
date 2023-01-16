@@ -98,14 +98,12 @@ const handleGetCollectionMetadata = async (
   const attributes: { [key: string]: Set<string> } = {};
   metadata.forEach((nft) =>
     Object.keys(nft.attributes).forEach((attrKey) => {
-      if (attrKey in attributes) {
-        attributes[attrKey].add(
-          nft.attributes[attrKey as keyof typeof nft.attributes],
-        );
-      } else {
-        attributes[attrKey] = new Set([
-          nft.attributes[attrKey as keyof typeof nft.attributes],
-        ]);
+      if (!(attrKey in attributes)) {
+        attributes[attrKey] = new Set<string>([]);
+      }
+      const val = nft.attributes[attrKey as keyof typeof nft.attributes];
+      if (val) {
+        attributes[attrKey].add(val);
       }
     }),
   );

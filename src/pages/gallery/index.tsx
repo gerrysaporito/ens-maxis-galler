@@ -26,7 +26,6 @@ const GalleryPage: React.FC<FunctionReturnType<IGetNfts>> = ({
     );
   }
 
-  console.log(data.nfts[0]);
   return (
     <HighLevelFrame>
       <PageLayout nfts={data.nfts} />
@@ -78,9 +77,8 @@ export const getServerSideProps: GetServerSideProps<
         },
       };
     }
-    const { nfts } = result.data;
 
-    return { props: { success: true, data: { nfts } } };
+    return { props: { success: true, data: result.data } };
   } catch (e) {
     const result = handleError({
       e,

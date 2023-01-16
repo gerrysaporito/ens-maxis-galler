@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 
+import { Attributes } from '@app/interface/attributes';
 import { isValidContractAddress } from '@app/interface/blockchain';
+import { OrderType } from '@app/interface/constants';
 import type { FunctionReturnType } from '@app/interface/FunctionReturnType';
 import { errorReturnValue } from '@app/interface/FunctionReturnType';
 import type { INft } from '@app/interface/nft';
-import { AttributesSchema } from '@app/interface/nft';
 import { handleError } from '@app/lib/handleError';
 import { logRequestParams } from '@app/lib/logRequestParams';
 import { readNftData } from '@app/lib/readNftData';
@@ -15,16 +16,66 @@ import { readNftData } from '@app/lib/readNftData';
  * Endpoint's Relevent Interfaces
  * ==============================
  */
+const AttributesObject = Attributes.toObject();
+
 export const PostNftsBodySchema = z.object({
   contractAddress: z.string(),
   pageNumber: z.number(),
   limitPerPage: z.number(),
-  searchAttributes: AttributesSchema.partial().optional(),
+  orderType: z
+    .string()
+    .refine((order) => Object.values(OrderType).includes(order as OrderType))
+    .optional(),
+  searchAttributes: z
+    .record(z.string(), z.string().array())
+    .refine(
+      (attributes) => {
+        const keys = Object.keys(attributes);
+        for (const _key of keys) {
+          const key = _key as keyof typeof AttributesObject;
+          if (!(key in AttributesObject)) {
+            return false;
+          }
+        }
+        return true;
+      },
+      {
+        message: `Search attribute keys must be one of the acceptable keys: ${Object.keys(
+          AttributesObject,
+        )
+          .map((v) => `'${v}'`)
+          .join(', ')}`,
+      },
+    )
+    .refine(
+      (attributes) => {
+        for (const _key of Object.keys(attributes)) {
+          const key = _key as keyof typeof attributes;
+          const validValues = AttributesObject[
+            key as keyof typeof AttributesObject
+          ].map((v) => v.toLowerCase());
+          for (const _value of attributes[key]) {
+            const value = _value as unknown as typeof validValues;
+
+            // @ts-ignore
+            if (!validValues.includes(value.toLowerCase())) {
+              return false;
+            }
+          }
+        }
+        return true;
+      },
+      {
+        message: `Search attribute value is invalid`,
+      },
+    )
+    .optional(),
 });
 export type PostNftsBodyType = z.infer<typeof PostNftsBodySchema>;
 
 export interface IGetNfts {
   nfts: INft[];
+  count: number;
 }
 
 /**
@@ -86,8 +137,13 @@ const handlePostNfts = async (
     const error = `Failed to validate request body`;
     return errorReturnValue({ error, info: body.error.format() });
   }
-  const { contractAddress, searchAttributes, pageNumber, limitPerPage } =
-    body.data;
+  const {
+    contractAddress,
+    searchAttributes,
+    pageNumber,
+    limitPerPage,
+    orderType,
+  } = body.data;
 
   // Check if contract address passed is valid.
   const validContractAddressResult = isValidContractAddress(contractAddress);
@@ -102,11 +158,18 @@ const handlePostNfts = async (
   const { nfts } = fileDataResult.data;
 
   // If no search attributes passed, return all NFTs for that page.
-  if (!searchAttributes) {
+  if (!searchAttributes || !Object.keys(searchAttributes).length) {
+    const orderedNfts = orderNfts({ orderType, nfts });
+    const nftsForPage = getNftsForPage({
+      nfts: orderedNfts,
+      pageNumber,
+      limitPerPage,
+    });
     return {
       success: true,
       data: {
-        nfts: getNftsForPage({ nfts, pageNumber, limitPerPage }),
+        count: nftsForPage.length,
+        nfts: nftsForPage,
       },
     };
   }
@@ -117,10 +180,18 @@ const handlePostNfts = async (
     search: searchAttributes,
   });
 
+  const orderedNfts = orderNfts({ orderType, nfts: filteredNfts });
+
+  const nftsForPage = getNftsForPage({
+    nfts: orderedNfts,
+    pageNumber,
+    limitPerPage,
+  });
   return {
     success: true,
     data: {
-      nfts: getNftsForPage({ nfts: filteredNfts, pageNumber, limitPerPage }),
+      count: nftsForPage.length,
+      nfts: nftsForPage,
     },
   };
 };
@@ -139,14 +210,15 @@ const filterNftsByAttributes = ({
   search: PostNftsBodyType['searchAttributes'];
 }) => {
   return nfts.filter((nft) => {
-    let match = true;
+    let match = false;
     if (search) {
       for (const key of Object.keys(search)) {
-        const _key = key as keyof typeof search;
+        const _key = key as keyof typeof nft.metadata.attributes;
         const nftAttr = nft.metadata.attributes[_key];
-        const searchAttr = search[_key];
-        if (nftAttr !== searchAttr) {
-          match = false;
+        for (const searchAttr of search[_key]) {
+          if (String(nftAttr).toLowerCase() === searchAttr.toLowerCase()) {
+            match = true;
+          }
         }
       }
     }
@@ -164,3 +236,27 @@ const getNftsForPage = ({
   pageNumber: number;
   limitPerPage: number;
 }) => nfts.slice((pageNumber - 1) * limitPerPage, pageNumber * limitPerPage);
+
+// UTILITY: Return nfts in requeseted order.
+const orderNfts = ({
+  orderType,
+  nfts,
+}: {
+  orderType?: string;
+  nfts: INft[];
+}) => {
+  switch (orderType) {
+    case OrderType.DESC: {
+      return nfts.reverse();
+    }
+    case OrderType.SHUFFLE: {
+      const copy = [...nfts];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+  }
+  return nfts;
+};

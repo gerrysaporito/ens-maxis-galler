@@ -1,24 +1,31 @@
 import { Divider, Heading, Stack, Flex } from '@chakra-ui/react';
-import { useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
 import { DropdownCheckbox } from '../pure/DropdownCheckbox';
 import { Attributes } from '@app/interface/attributes';
 
-export const Filter: React.FC = () => {
-  const attributesObject = Attributes.toObject();
+const AttributesObject = Attributes.toObject();
 
-  // Attributes used to search NFTs for.
-  const [searchAttributes, setSearchAttributes] = useState<
-    Partial<{
-      [key in keyof typeof attributesObject]: string[];
-    }>
-  >({});
+interface IFilter {
+  searchAttributes: Partial<{
+    [key in keyof typeof AttributesObject]: string[];
+  }>;
+  setSearchAttributes: Dispatch<
+    SetStateAction<
+      Partial<{
+        [key in keyof typeof AttributesObject]: string[];
+      }>
+    >
+  >;
+}
 
-  console.log(searchAttributes);
-
+export const Filter: React.FC<IFilter> = ({
+  searchAttributes,
+  setSearchAttributes,
+}) => {
   // Creating the dropdown list of filter values.
-  const filters = Object.keys(attributesObject).map((attrKey) => {
-    const key = attrKey as keyof typeof attributesObject;
+  const filters = Object.keys(AttributesObject).map((attrKey) => {
+    const key = attrKey as keyof typeof AttributesObject;
 
     const updateSearchOptions = (updatedSearchOptions: string[]) => {
       setSearchAttributes((prev) => {
@@ -32,7 +39,7 @@ export const Filter: React.FC = () => {
       <DropdownCheckbox
         key={attrKey}
         label={attrKey}
-        options={attributesObject[key]}
+        options={AttributesObject[key]}
         optionsChecked={searchAttributes[key] ?? []}
         setOptionsChecked={updateSearchOptions}
       />

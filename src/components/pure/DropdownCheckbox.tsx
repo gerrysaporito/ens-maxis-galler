@@ -27,7 +27,6 @@ export const DropdownCheckbox: React.FC<IDropdownCheckbox> = ({
   const [isHidden, setIsHidden] = useState(false);
 
   const onSearch: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    console.log(e.target.value);
     setOptionsList(
       options.filter((option) => option.toLowerCase().includes(e.target.value)),
     );

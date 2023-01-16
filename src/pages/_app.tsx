@@ -1,4 +1,4 @@
-import { Box, ChakraProvider, Stack } from '@chakra-ui/react';
+import { ChakraProvider, Stack } from '@chakra-ui/react';
 import type { AppProps } from 'next/app';
 
 import { Navbar } from '@app/components/frame/Navbar';
