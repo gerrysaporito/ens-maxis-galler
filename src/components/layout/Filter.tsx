@@ -24,7 +24,7 @@ export const Filter: React.FC<IFilter> = ({
   setSearchAttributes,
 }) => {
   // Creating the dropdown list of filter values.
-  const filters = Object.keys(AttributesObject).map((attrKey) => {
+  const filters = Object.keys(AttributesObject).map((attrKey, i) => {
     const key = attrKey as keyof typeof AttributesObject;
 
     const updateSearchOptions = (updatedSearchOptions: string[]) => {
@@ -36,13 +36,16 @@ export const Filter: React.FC<IFilter> = ({
     };
 
     return (
-      <DropdownCheckbox
-        key={attrKey}
-        label={attrKey}
-        options={AttributesObject[key]}
-        optionsChecked={searchAttributes[key] ?? []}
-        setOptionsChecked={updateSearchOptions}
-      />
+      <>
+        <DropdownCheckbox
+          key={attrKey}
+          label={attrKey}
+          options={AttributesObject[key]}
+          optionsChecked={searchAttributes[key] ?? []}
+          setOptionsChecked={updateSearchOptions}
+        />
+        <Divider key={attrKey + i.toString()} />
+      </>
     );
   });
 
