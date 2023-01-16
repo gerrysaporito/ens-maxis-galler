@@ -2,12 +2,13 @@ import {
   Checkbox,
   Stack,
   Flex,
-  Button,
   Input,
   Text,
   Image,
+  IconButton,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { FaCaretDown, FaCaretUp } from 'react-icons/fa';
 
 interface IDropdownCheckbox {
   options: string[];
@@ -24,7 +25,7 @@ export const DropdownCheckbox: React.FC<IDropdownCheckbox> = ({
   icon,
 }) => {
   const [optionsList, setOptionsList] = useState(options);
-  const [isHidden, setIsHidden] = useState(false);
+  const [isHidden, setIsHidden] = useState(true);
 
   const onSearch: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setOptionsList(
@@ -57,7 +58,12 @@ export const DropdownCheckbox: React.FC<IDropdownCheckbox> = ({
           {icon && <Image src={icon} alt={`${label} icon.`} pr='2' />}
           {label}
         </Text>
-        <Button onClick={() => setIsHidden((prev) => !prev)}>+</Button>
+        <IconButton
+          icon={isHidden ? <FaCaretDown /> : <FaCaretUp />}
+          aria-label='Show options toggle'
+          variant='ghost'
+          onClick={() => setIsHidden((prev) => !prev)}
+        />
       </Flex>
       {!isHidden && (
         <Stack>

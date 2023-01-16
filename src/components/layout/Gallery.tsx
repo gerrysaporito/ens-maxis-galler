@@ -5,6 +5,7 @@ import {
   IconButton,
   SimpleGrid,
   Spinner,
+  Button,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { ImShuffle } from 'react-icons/im';
@@ -33,11 +34,19 @@ interface IGallery {
   searchAttributes: Partial<{
     [key in keyof typeof AttributesObject]: string[];
   }>;
+  setSearchAttributes: React.Dispatch<
+    React.SetStateAction<
+      Partial<{
+        [key in keyof typeof AttributesObject]: string[];
+      }>
+    >
+  >;
 }
 
 export const Gallery: React.FC<IGallery> = ({
   nfts: _nfts,
   searchAttributes,
+  setSearchAttributes,
 }) => {
   const [nfts, setNfts] = useState(_nfts);
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +77,6 @@ export const Gallery: React.FC<IGallery> = ({
           setIsLoading(false);
           return;
         }
-        console.log(result.data.nfts.length);
 
         setNfts(result.data.nfts);
       } catch (e) {
@@ -92,8 +100,15 @@ export const Gallery: React.FC<IGallery> = ({
         <Text as='span' pr='5'>
           <PageChangeSelector />
         </Text>
-        <Text as='span'>
+        <Text as='span' pr='5'>
           <ShuffleButton setReload={setReload} setOrderType={setOrderType} />
+        </Text>
+        <Text as='span' pr='5'>
+          <ClearSearchButton
+            setReload={setReload}
+            setOrderType={setOrderType}
+            setSearchAttributes={setSearchAttributes}
+          />
         </Text>
       </Flex>
       {isLoading ? (
@@ -112,11 +127,11 @@ export const Gallery: React.FC<IGallery> = ({
   );
 };
 
-interface IShuggleButton {
+interface IShuffleButton {
   setReload: React.Dispatch<React.SetStateAction<boolean>>;
   setOrderType: React.Dispatch<React.SetStateAction<OrderType>>;
 }
-const ShuffleButton: React.FC<IShuggleButton> = ({
+const ShuffleButton: React.FC<IShuffleButton> = ({
   setReload,
   setOrderType,
 }) => {
@@ -132,5 +147,34 @@ const ShuffleButton: React.FC<IShuggleButton> = ({
       variant='ghost'
       icon={<ImShuffle />}
     />
+  );
+};
+
+interface IClearSearchButton {
+  setReload: React.Dispatch<React.SetStateAction<boolean>>;
+  setOrderType: React.Dispatch<React.SetStateAction<OrderType>>;
+  setSearchAttributes: React.Dispatch<
+    React.SetStateAction<
+      Partial<{
+        [key in keyof typeof AttributesObject]: string[];
+      }>
+    >
+  >;
+}
+const ClearSearchButton: React.FC<IClearSearchButton> = ({
+  setReload,
+  setOrderType,
+  setSearchAttributes,
+}) => {
+  const onClick: React.MouseEventHandler<HTMLButtonElement> = () => {
+    setReload((prev) => !prev);
+    setOrderType(OrderType.ASC);
+    setSearchAttributes({});
+  };
+
+  return (
+    <Button onClick={onClick} variant='ghost'>
+      Clear
+    </Button>
   );
 };

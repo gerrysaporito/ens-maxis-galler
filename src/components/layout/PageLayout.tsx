@@ -38,7 +38,11 @@ export const PageLayout: React.FC<IPageLayout> = ({ nfts }) => {
         height='90vh'
         overflowY='scroll'
       >
-        <Gallery nfts={nfts} searchAttributes={searchAttributes} />
+        <Gallery
+          nfts={nfts}
+          searchAttributes={searchAttributes}
+          setSearchAttributes={setSearchAttributes}
+        />
       </Box>
     </Grid>
   );

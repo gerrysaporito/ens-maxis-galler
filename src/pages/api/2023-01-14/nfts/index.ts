@@ -158,7 +158,10 @@ const handlePostNfts = async (
   const { nfts } = fileDataResult.data;
 
   // If no search attributes passed, return all NFTs for that page.
-  if (!searchAttributes || !Object.keys(searchAttributes).length) {
+  if (
+    !searchAttributes ||
+    !Object.values(searchAttributes).filter((v) => v).length
+  ) {
     const orderedNfts = orderNfts({ orderType, nfts });
     const nftsForPage = getNftsForPage({
       nfts: orderedNfts,

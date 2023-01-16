@@ -44,7 +44,7 @@ export const Filter: React.FC<IFilter> = ({
           optionsChecked={searchAttributes[key] ?? []}
           setOptionsChecked={updateSearchOptions}
         />
-        <Divider key={attrKey + i.toString()} />
+        <Divider key={attrKey + i.toString()} mt='2' mb='2' />
       </>
     );
   });
