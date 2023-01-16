@@ -1,6 +1,7 @@
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, Stack } from '@chakra-ui/react';
 import type { AppProps } from 'next/app';
 
+import { Navbar } from '@app/components/frame/Navbar';
 import LocalStorage from '@app/models/LocalStorage';
 
 const initializeLocalStorage = () => {
@@ -24,7 +25,10 @@ initializeLocalStorage();
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
-      <Component {...pageProps} />
+      <Navbar />
+      <Stack pt='20' pl='10' pr='10'>
+        <Component {...pageProps} />
+      </Stack>
     </ChakraProvider>
   );
 }

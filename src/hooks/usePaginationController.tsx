@@ -2,7 +2,7 @@ import { Select } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-import { PaginationController } from '@app/components/frames/PaginationController';
+import { PaginationController } from '@app/components/frame/PaginationController';
 
 import { useUpdateRouterQuery } from './useUpdateRouterQuery';
 

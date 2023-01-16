@@ -1,3 +1,5 @@
+import { Image } from '@chakra-ui/react';
+
 export const EnsMaxisLogo: React.FC = () => {
-  return <svg href='./assets/EnsMaxisLogo.svg' />;
+  return <Image src='/assets/EnsMaxisLogo.svg' alt='ENS Maxis Logo' />;
 };

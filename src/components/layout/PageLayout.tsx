@@ -13,8 +13,7 @@ export const PageLayout: React.FC<IPageLayout> = ({ nfts }) => {
   return (
     <Grid
       templateColumns={{ sm: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
-      pl='10'
-      pr='10'
+      gridGap='10'
     >
       <Box gridColumn={{ md: 'span 1' }} height='100vh'>
         <Filter />

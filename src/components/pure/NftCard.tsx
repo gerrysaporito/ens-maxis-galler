@@ -13,8 +13,8 @@ export const NftCard: React.FC<INftCard> = ({ nft }) => {
     : nft.metadata.image;
   return (
     <Stack>
-      <Box boxShadow='xl' borderRadius='2xl'>
-        <Image borderRadius='2xl' src={imgSource} alt={nft.metadata.name} />
+      <Box boxShadow='xl' borderRadius='lg'>
+        <Image borderRadius='lg' src={imgSource} alt={nft.metadata.name} />
       </Box>
       <Stack textAlign='center'>
         <Text fontSize='xs' variant='s'>
