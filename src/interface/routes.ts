@@ -3,10 +3,10 @@ import { join } from 'path';
 import { getContractChainFromContractAddress } from './blockchain';
 import type { FunctionReturnType } from './FunctionReturnType';
 
-console.log(process.env.VERCEL_URL);
-export const BASE_URL = process.env.VERCEL_URL
-  ? process.env.VERCEL_URL ?? ''
-  : 'http://localhost:3000';
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL
+    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL ?? process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
 
 export const ROUTE_GALLERY = '/gallery';
 export const ROUTE_GET_NFTS_BY_METADATA = '/api/2023-01-14/nfts';
