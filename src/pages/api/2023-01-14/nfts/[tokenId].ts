@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 import { z } from 'zod';
 
 import { isValidContractAddress } from '@app/interface/blockchain';
@@ -39,6 +40,7 @@ export default async (
   try {
     switch (req.method?.toLowerCase()) {
       case 'get': {
+        await NextCors(req, res, { methods: ['POST'], origin: '*' });
         const result = await handleGetNfts(req);
         return res.status(result.data ? 200 : 400).json(result);
       }

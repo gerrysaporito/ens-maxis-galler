@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 import { z } from 'zod';
 
 import { Attributes } from '@app/interface/attributes';
@@ -94,6 +95,7 @@ export default async (
   try {
     switch (req.method?.toLowerCase()) {
       case 'post': {
+        await NextCors(req, res, { methods: ['POST'], origin: '*' });
         const result = await handlePostNfts(req);
         return res.status(result.data ? 200 : 400).json(result);
       }
