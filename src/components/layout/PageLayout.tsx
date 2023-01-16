@@ -2,7 +2,6 @@ import { Box, Grid } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import { Attributes } from '@app/interface/attributes';
-import type { INft } from '@app/interface/nft';
 
 import { Filter } from './Filter';
 import { Gallery } from './Gallery';

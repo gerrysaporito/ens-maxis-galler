@@ -18,10 +18,6 @@ export const fetchClient = async <T>({
   jsonBody,
   headers = {},
 }: FetchClientType): Promise<FunctionReturnType<T>> => {
-  if (!endpoint.startsWith('/')) {
-    throw new Error(`Endpoint must start with '/'`);
-  }
-
   const url = BASE_URL.includes('localhost')
     ? `${BASE_URL}${endpoint}`
     : endpoint;
