@@ -6,6 +6,7 @@ import {
   SimpleGrid,
   Spinner,
   Button,
+  Input,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { ImShuffle } from 'react-icons/im';
@@ -51,6 +52,7 @@ export const Gallery: React.FC<IGallery> = ({
   const [nfts, setNfts] = useState(_nfts);
   const [isLoading, setIsLoading] = useState(false);
   const [orderType, setOrderType] = useState(OrderType.ASC);
+  const [searchTerm, setSearchTerm] = useState('');
   const [reload, setReload] = useState(false);
   const { limitPerPage, pageNumber, PageChangeSelector, PageController } =
     usePaginationController({ collectionSize: 10_000 });
@@ -64,6 +66,7 @@ export const Gallery: React.FC<IGallery> = ({
         pageNumber,
         searchAttributes,
         orderType,
+        searchTerm,
       };
 
       try {
@@ -88,7 +91,14 @@ export const Gallery: React.FC<IGallery> = ({
       await asyncDelayMs(500 + Math.random() * 500);
       setIsLoading(false);
     })();
-  }, [limitPerPage, pageNumber, searchAttributes, reload, orderType]);
+  }, [
+    limitPerPage,
+    pageNumber,
+    searchAttributes,
+    reload,
+    orderType,
+    searchTerm,
+  ]);
 
   const cards = nfts.map((nft) => (
     <NftCard key={nft.metadata.name} nft={nft} />
@@ -104,10 +114,19 @@ export const Gallery: React.FC<IGallery> = ({
           <ShuffleButton setReload={setReload} setOrderType={setOrderType} />
         </Text>
         <Text as='span' pr='5'>
+          <SearchTermInput
+            setReload={setReload}
+            setOrderType={setOrderType}
+            setSearchTerm={setSearchTerm}
+            searchTerm={searchTerm}
+          />
+        </Text>
+        <Text as='span' pr='5'>
           <ClearSearchButton
             setReload={setReload}
             setOrderType={setOrderType}
             setSearchAttributes={setSearchAttributes}
+            setSearchTerm={setSearchTerm}
           />
         </Text>
       </Flex>
@@ -153,6 +172,7 @@ const ShuffleButton: React.FC<IShuffleButton> = ({
 interface IClearSearchButton {
   setReload: React.Dispatch<React.SetStateAction<boolean>>;
   setOrderType: React.Dispatch<React.SetStateAction<OrderType>>;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   setSearchAttributes: React.Dispatch<
     React.SetStateAction<
       Partial<{
@@ -165,16 +185,41 @@ const ClearSearchButton: React.FC<IClearSearchButton> = ({
   setReload,
   setOrderType,
   setSearchAttributes,
+  setSearchTerm,
 }) => {
   const onClick: React.MouseEventHandler<HTMLButtonElement> = () => {
     setReload((prev) => !prev);
     setOrderType(OrderType.ASC);
     setSearchAttributes({});
+    setSearchTerm('');
   };
 
   return (
     <Button onClick={onClick} variant='ghost'>
       Clear
     </Button>
+  );
+};
+
+interface ISearchTermInput {
+  setReload: React.Dispatch<React.SetStateAction<boolean>>;
+  setOrderType: React.Dispatch<React.SetStateAction<OrderType>>;
+  setSearchTerm: React.Dispatch<string>;
+  searchTerm: string;
+}
+const SearchTermInput: React.FC<ISearchTermInput> = ({
+  setReload,
+  setOrderType,
+  setSearchTerm,
+  searchTerm,
+}) => {
+  const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    setReload((prev) => !prev);
+    setOrderType(OrderType.ASC);
+    setSearchTerm(e.target.value);
+  };
+
+  return (
+    <Input value={searchTerm} onChange={onChange} placeholder='Search by...' />
   );
 };

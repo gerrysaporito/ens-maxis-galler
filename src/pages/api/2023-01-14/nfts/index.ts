@@ -22,6 +22,7 @@ export const PostNftsBodySchema = z.object({
   contractAddress: z.string(),
   pageNumber: z.number(),
   limitPerPage: z.number(),
+  searchTerm: z.string().optional(),
   orderType: z
     .string()
     .refine((order) => Object.values(OrderType).includes(order as OrderType))
@@ -143,6 +144,7 @@ const handlePostNfts = async (
     pageNumber,
     limitPerPage,
     orderType,
+    searchTerm,
   } = body.data;
 
   // Check if contract address passed is valid.
@@ -155,24 +157,29 @@ const handlePostNfts = async (
   if (!fileDataResult.success) {
     return fileDataResult;
   }
-  const { nfts } = fileDataResult.data;
+  let { nfts } = fileDataResult.data;
+
+  // Use only nfts that match the search term if provided.
+  if (searchTerm) {
+    nfts = filterNftsBySearchTerm({ nfts, searchTerm });
+  }
 
   // If no search attributes passed, return all NFTs for that page.
   if (
     !searchAttributes ||
     !Object.values(searchAttributes).filter((v) => v).length
   ) {
-    const orderedNfts = orderNfts({ orderType, nfts });
-    const nftsForPage = getNftsForPage({
-      nfts: orderedNfts,
+    nfts = getNftsByOrder({ orderType, nfts });
+    nfts = getNftsForPage({
+      nfts,
       pageNumber,
       limitPerPage,
     });
     return {
       success: true,
       data: {
-        count: nftsForPage.length,
-        nfts: nftsForPage,
+        count: nfts.length,
+        nfts,
       },
     };
   }
@@ -183,7 +190,7 @@ const handlePostNfts = async (
     search: searchAttributes,
   });
 
-  const orderedNfts = orderNfts({ orderType, nfts: filteredNfts });
+  const orderedNfts = getNftsByOrder({ orderType, nfts: filteredNfts });
 
   const nftsForPage = getNftsForPage({
     nfts: orderedNfts,
@@ -241,7 +248,7 @@ const getNftsForPage = ({
 }) => nfts.slice((pageNumber - 1) * limitPerPage, pageNumber * limitPerPage);
 
 // UTILITY: Return nfts in requeseted order.
-const orderNfts = ({
+const getNftsByOrder = ({
   orderType,
   nfts,
 }: {
@@ -262,4 +269,17 @@ const orderNfts = ({
     }
   }
   return nfts;
+};
+
+// UTILITY: Return all NFTs that match the search term provided.
+const filterNftsBySearchTerm = ({
+  nfts,
+  searchTerm,
+}: {
+  nfts: INft[];
+  searchTerm: string;
+}) => {
+  return nfts.filter((nft) =>
+    JSON.stringify(nft).toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 };
