@@ -1,4 +1,4 @@
-import { Box, Flex, IconButton, Link, Text } from '@chakra-ui/react';
+import { Box, Flex, IconButton, Link } from '@chakra-ui/react';
 import { FaDiscord, FaTwitter, FaGlobe } from 'react-icons/fa';
 import type { IconType } from 'react-icons/lib';
 

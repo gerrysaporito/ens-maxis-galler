@@ -1,4 +1,4 @@
-import { ChakraProvider, Stack } from '@chakra-ui/react';
+import { Box, ChakraProvider, Stack } from '@chakra-ui/react';
 import type { AppProps } from 'next/app';
 
 import { Navbar } from '@app/components/frame/Navbar';
@@ -26,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
       <Navbar />
-      <Stack pt='20' pl='10' pr='10'>
+      <Stack flex='1'>
         <Component {...pageProps} />
       </Stack>
     </ChakraProvider>

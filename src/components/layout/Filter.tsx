@@ -40,10 +40,19 @@ export const Filter: React.FC = () => {
   });
 
   return (
-    <Stack>
+    <Stack height='90vh' pl='10'>
       <Heading>FILTER</Heading>
       <Divider />
-      <Flex flexDirection='column' flex='1'>
+      <Flex
+        flexDirection='column'
+        flex='1'
+        overflowY='scroll'
+        sx={{
+          '::-webkit-scrollbar': {
+            display: 'none',
+          },
+        }}
+      >
         {filters}
       </Flex>
     </Stack>

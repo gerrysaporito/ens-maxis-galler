@@ -37,11 +37,11 @@ export default GalleryPage;
 
 const HighLevelFrame: React.FC<PropsWithChildren> = ({ children }) => {
   return (
-    <Stack>
+    <Stack h='100%'>
       <Head>
         <DocumentHead />
       </Head>
-      <Stack>{children}</Stack>
+      <Stack h='100%'>{children}</Stack>
     </Stack>
   );
 };
