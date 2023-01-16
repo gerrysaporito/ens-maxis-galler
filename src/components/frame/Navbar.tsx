@@ -5,14 +5,31 @@ import type { IconType } from 'react-icons/lib';
 import { EnsMaxisLogo } from '../pure/EnsMaxisLogo';
 
 const SOCIAL_LINKS = [
-  { href: 'https://chat.ens.domains/', SocialIcon: FaDiscord },
-  { href: 'https://twitter.com/ENSMaxisNFT/', SocialIcon: FaTwitter },
-  { href: 'https://www.ensmaxis.com/', SocialIcon: FaGlobe },
+  {
+    href: 'https://chat.ens.domains/',
+    label: 'Join Discord',
+    SocialIcon: FaDiscord,
+  },
+  {
+    href: 'https://twitter.com/ENSMaxisNFT/',
+    label: 'Follow on twitter',
+    SocialIcon: FaTwitter,
+  },
+  {
+    href: 'https://www.ensmaxis.com/',
+    label: 'Learn more at the ENS Maxis site',
+    SocialIcon: FaGlobe,
+  },
 ];
 
 export const Navbar: React.FC = () => {
   const socialLinks = SOCIAL_LINKS.map((meta, i) => (
-    <SocialIconLink key={i} href={meta.href} SocialIcon={meta.SocialIcon} />
+    <SocialIconLink
+      key={i}
+      href={meta.href}
+      SocialIcon={meta.SocialIcon}
+      label={meta.label}
+    />
   ));
 
   return (
@@ -34,16 +51,17 @@ export const Navbar: React.FC = () => {
 
 interface ISocialIconLink {
   href: string;
+  label: string;
   SocialIcon: IconType;
 }
-const SocialIconLink: React.FC<ISocialIconLink> = ({ href, SocialIcon }) => {
+const SocialIconLink: React.FC<ISocialIconLink> = ({
+  href,
+  SocialIcon,
+  label,
+}) => {
   return (
     <Link href={href} isExternal>
-      <IconButton
-        aria-label='Join our Discord Community'
-        variant='ghost'
-        icon={<SocialIcon />}
-      />
+      <IconButton aria-label={label} variant='ghost' icon={<SocialIcon />} />
     </Link>
   );
 };

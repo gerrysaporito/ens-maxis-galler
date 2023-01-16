@@ -7,10 +7,11 @@ import { PaginationController } from '@app/components/frame/PaginationController
 import { useUpdateRouterQuery } from './useUpdateRouterQuery';
 
 export const usePaginationController = ({
-  numPages,
+  collectionSize,
   pageLimits,
 }: {
-  numPages: number;
+  collectionSize?: number;
+  numPages?: number;
   pageLimits?: number[];
 }) => {
   const _pageLimits = pageLimits ?? [25, 50, 100];
@@ -25,6 +26,9 @@ export const usePaginationController = ({
   const [limitPerPage, setLimitPerPage] = useState(
     query.limit ? parseInt(query.limit as string) : _pageLimits[0],
   );
+  const [numPages, setNumPages] = useState(
+    (collectionSize ?? 10_000) / limitPerPage,
+  );
 
   const onLimitPerPageChange: React.ChangeEventHandler<HTMLSelectElement> = (
     e,
@@ -32,6 +36,7 @@ export const usePaginationController = ({
     e.preventDefault();
     setLimitPerPage(parseInt(e.target.value) ?? 25);
     setPageNumber(1);
+    setNumPages((collectionSize ?? 10_000) / parseInt(e.target.value ?? '25'));
     updateRouterQuery({ limit: e.target.value || '25', pageNumber: '1' });
   };
 
