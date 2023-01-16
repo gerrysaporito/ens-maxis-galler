@@ -4,6 +4,7 @@ import Head from 'next/head';
 import type { PropsWithChildren } from 'react';
 
 import type { IGetNfts, PostNftsBodyType } from '../api/2023-01-14/nfts';
+import { PageLayout } from '@app/components/layout/PageLayout';
 import { DocumentHead } from '@app/components/pure/DocumentHead';
 import { ENS_MAXIS_CONTRACT_ADDRESS } from '@app/interface/constants';
 import { QueryParamsSchema } from '@app/interface/custom';
@@ -12,7 +13,10 @@ import { ROUTE_GET_NFTS_BY_METADATA } from '@app/interface/routes';
 import { fetchClient } from '@app/lib/client';
 import { handleError } from '@app/lib/handleError';
 
-const Gallery: React.FC<FunctionReturnType<IGetNfts>> = ({ success, data }) => {
+const GalleryPage: React.FC<FunctionReturnType<IGetNfts>> = ({
+  success,
+  data,
+}) => {
   if (!success) {
     return (
       <HighLevelFrame>
@@ -22,17 +26,14 @@ const Gallery: React.FC<FunctionReturnType<IGetNfts>> = ({ success, data }) => {
     );
   }
 
-  console.log(data.nfts.length);
+  console.log(data.nfts[0]);
   return (
-    <Stack>
-      <Head>
-        <DocumentHead />
-      </Head>
-      <Stack>Hello World</Stack>
-    </Stack>
+    <HighLevelFrame>
+      <PageLayout nfts={data.nfts} />
+    </HighLevelFrame>
   );
 };
-export default Gallery;
+export default GalleryPage;
 
 const HighLevelFrame: React.FC<PropsWithChildren> = ({ children }) => {
   return (

@@ -26,3 +26,6 @@ export const getFileLocation = (
   const location = `/src/data/${contractChain.toLowerCase()}-${contractAddress.toLowerCase()}.json`;
   return { success: true, data: join(rootDir, location) };
 };
+
+export const ipfsToHttp = (url: string) =>
+  url.replace('ipfs://', 'https://ipfs.io/ipfs/');

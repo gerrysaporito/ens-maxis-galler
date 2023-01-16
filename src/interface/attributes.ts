@@ -272,4 +272,22 @@ export class Attributes {
     'Sedge Hat',
     'Poker Hat',
   ] as const;
+
+  static toObject() {
+    return {
+      Avatar: [...this.Avatar],
+      Background: [...this.Background],
+      MaxisRing: [...this.MaxisRing],
+      Body: [...this.Body],
+      Head: [...this.Head],
+      Eyes: [...this.Eyes],
+      Mouth: [...this.Mouth],
+      Hair: [...this.Hair],
+      Clothing: [...this.Clothing],
+      Nose: [...this.Nose],
+      Eyewear: [...this.Eyewear],
+      Accessory: [...this.Accessory],
+      Headwear: [...this.Headwear],
+    };
+  }
 }
