@@ -123,10 +123,11 @@ export const Gallery: React.FC<IGallery> = ({
       gap='5'
       h='90vh'
       pr='10'
+      pl='10'
       overflowY='scroll'
       sx={{ '::-webkit-scrollbar': { display: 'none' } }}
     >
-      <Flex>
+      <Flex justifyContent={{ sm: 'center', md: 'flex-start' }}>
         <Text as='span' pr='5'>
           <PageChangeSelector />
         </Text>
