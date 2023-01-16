@@ -6,38 +6,33 @@ import { PaginationController } from '@app/components/frame/PaginationController
 
 import { useUpdateRouterQuery } from './useUpdateRouterQuery';
 
+const pageLimits = [25, 50, 100];
 export const usePaginationController = ({
   collectionSize,
-  pageLimits,
 }: {
-  collectionSize?: number;
-  numPages?: number;
-  pageLimits?: number[];
+  collectionSize: number;
 }) => {
-  const _pageLimits = pageLimits ?? [25, 50, 100];
   const router = useRouter();
   const { query } = router;
   const { updateRouterQuery } = useUpdateRouterQuery();
+
   const [pageNumber, setPageNumber] = useState(
     query.pageNumber && parseInt(query.pageNumber as string) > 0
       ? parseInt(query.pageNumber as string)
       : 1,
   );
   const [limitPerPage, setLimitPerPage] = useState(
-    query.limit ? parseInt(query.limit as string) : _pageLimits[0],
+    query.limit ? parseInt(query.limit as string) : pageLimits[0],
   );
-  const [numPages, setNumPages] = useState(
-    (collectionSize ?? 10_000) / limitPerPage,
-  );
+  const [resultsSize, setResultsSize] = useState(collectionSize);
 
   const onLimitPerPageChange: React.ChangeEventHandler<HTMLSelectElement> = (
     e,
   ) => {
-    e.preventDefault();
+    const val = parseInt(e.target.value ?? '25');
     setLimitPerPage(parseInt(e.target.value) ?? 25);
     setPageNumber(1);
-    setNumPages((collectionSize ?? 10_000) / parseInt(e.target.value ?? '25'));
-    updateRouterQuery({ limit: e.target.value || '25', pageNumber: '1' });
+    updateRouterQuery({ limit: val.toString(), pageNumber: '1' });
   };
 
   const PageChangeSelector: React.FC = () => (
@@ -46,7 +41,7 @@ export const usePaginationController = ({
       defaultValue={limitPerPage}
       onChange={onLimitPerPageChange}
     >
-      {_pageLimits.map((limit) => (
+      {pageLimits.map((limit) => (
         <option key={limit} value={limit}>
           {limit}
         </option>
@@ -58,15 +53,16 @@ export const usePaginationController = ({
     <PaginationController
       pageNumber={pageNumber}
       setPageNumber={setPageNumber}
-      numPages={numPages}
+      numPages={Math.ceil(resultsSize / limitPerPage)}
     />
   );
 
   return {
     limitPerPage,
     pageNumber,
-    setPageNumber,
     PageChangeSelector,
     PageController,
+    setPageNumber,
+    setResultsSize,
   };
 };

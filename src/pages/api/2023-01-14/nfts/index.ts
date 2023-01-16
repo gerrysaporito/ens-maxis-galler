@@ -76,7 +76,7 @@ export type PostNftsBodyType = z.infer<typeof PostNftsBodySchema>;
 
 export interface IGetNfts {
   nfts: INft[];
-  count: number;
+  totalCount: number;
 }
 
 /**
@@ -158,10 +158,12 @@ const handlePostNfts = async (
     return fileDataResult;
   }
   let { nfts } = fileDataResult.data;
+  let totalCount = nfts.length;
 
   // Use only nfts that match the search term if provided.
   if (searchTerm) {
     nfts = filterNftsBySearchTerm({ nfts, searchTerm });
+    totalCount = nfts.length;
   }
 
   // If no search attributes passed, return all NFTs for that page.
@@ -178,30 +180,30 @@ const handlePostNfts = async (
     return {
       success: true,
       data: {
-        count: nfts.length,
+        totalCount,
         nfts,
       },
     };
   }
 
   // There were search attributes passed so search for them and return for that page.
-  const filteredNfts = filterNftsByAttributes({
+  nfts = filterNftsByAttributes({
     nfts,
     search: searchAttributes,
   });
+  totalCount = nfts.length;
 
-  const orderedNfts = getNftsByOrder({ orderType, nfts: filteredNfts });
-
-  const nftsForPage = getNftsForPage({
-    nfts: orderedNfts,
+  nfts = getNftsByOrder({ orderType, nfts });
+  nfts = getNftsForPage({
+    nfts,
     pageNumber,
     limitPerPage,
   });
   return {
     success: true,
     data: {
-      count: nftsForPage.length,
-      nfts: nftsForPage,
+      totalCount,
+      nfts,
     },
   };
 };

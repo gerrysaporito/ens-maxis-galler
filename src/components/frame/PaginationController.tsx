@@ -1,4 +1,4 @@
-import { Grid, Button, Flex, useColorMode } from '@chakra-ui/react';
+import { Grid, Button, Flex } from '@chakra-ui/react';
 import type { Dispatch, SetStateAction } from 'react';
 
 import { useUpdateRouterQuery } from '@app/hooks/useUpdateRouterQuery';
@@ -9,7 +9,6 @@ export const PaginationController: React.FC<{
   numPages: number;
 }> = ({ pageNumber, setPageNumber, numPages }) => {
   const { updateRouterQuery } = useUpdateRouterQuery();
-  const { colorMode } = useColorMode();
 
   const onPageChangeClick = (
     increment: number,
@@ -68,20 +67,17 @@ export const PaginationController: React.FC<{
     },
   ];
 
-  const currentPageButtonTextColor = colorMode === 'light' ? 'white' : 'black';
-
   return (
     <Flex justifyContent='center' alignItems='center'>
       <Grid templateColumns='repeat(7, 1fr)' gap={6}>
         {buttons.map(({ text, shouldBeDisabled, currentPage, onClick }, i) => {
-          const hiddenColor = shouldBeDisabled ? '#00000000' : '';
           return (
             <Button
               key={i}
               disabled={shouldBeDisabled && !currentPage}
               variant={currentPage ? 'solid' : 'ghost'}
               onClick={onClick}
-              color={currentPage ? currentPageButtonTextColor : hiddenColor}
+              color='black'
             >
               {shouldBeDisabled && !currentPage ? '' : text}
             </Button>

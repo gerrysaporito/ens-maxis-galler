@@ -27,12 +27,7 @@ export const PageLayout: React.FC = () => {
           setSearchAttributes={setSearchAttributes}
         />
       </Box>
-      <Box
-        gridColumn={{ md: 'span 3' }}
-        pr='10'
-        height='90vh'
-        overflowY='scroll'
-      >
+      <Box gridColumn={{ md: 'span 3' }}>
         <Gallery
           searchAttributes={searchAttributes}
           setSearchAttributes={setSearchAttributes}

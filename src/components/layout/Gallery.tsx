@@ -52,9 +52,20 @@ export const Gallery: React.FC<IGallery> = ({
   const [orderType, setOrderType] = useState(OrderType.ASC);
   const [searchTerm, setSearchTerm] = useState('');
   const [reload, setReload] = useState(false);
-  const { limitPerPage, pageNumber, PageChangeSelector, PageController } =
-    usePaginationController({ collectionSize: 10_000 });
+  const {
+    limitPerPage,
+    pageNumber,
+    PageChangeSelector,
+    PageController,
+    setPageNumber,
+    setResultsSize,
+  } = usePaginationController({ collectionSize: 10_000 });
 
+  // Reset the page number whenever the search term updates
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setPageNumber(1), [searchAttributes]);
+
+  // Query new NFT data anytime the params change.
   useEffect(() => {
     (async () => {
       setIsLoading(true);
@@ -80,12 +91,15 @@ export const Gallery: React.FC<IGallery> = ({
         }
 
         setNfts(result.data.nfts);
+        setResultsSize(result.data.totalCount);
       } catch (e) {
         handleError({
           e,
           failedTo: 'get all NFTs on gallery page load',
         });
       }
+
+      // Make the user feel like the page is loading.
       await asyncDelayMs(500 + Math.random() * 500);
       setIsLoading(false);
     })();
@@ -96,6 +110,8 @@ export const Gallery: React.FC<IGallery> = ({
     reload,
     orderType,
     searchTerm,
+    setPageNumber,
+    setResultsSize,
   ]);
 
   const cards = nfts.map((nft) => (
@@ -103,13 +119,25 @@ export const Gallery: React.FC<IGallery> = ({
   ));
 
   return (
-    <Grid h='100%' gap='5'>
+    <Grid
+      gap='5'
+      h='90vh'
+      sx={{
+        '::-webkit-scrollbar': {
+          display: 'none',
+        },
+      }}
+    >
       <Flex>
         <Text as='span' pr='5'>
           <PageChangeSelector />
         </Text>
         <Text as='span' pr='5'>
-          <ShuffleButton setReload={setReload} setOrderType={setOrderType} />
+          <ShuffleButton
+            setReload={setReload}
+            setOrderType={setOrderType}
+            setPageNumber={setPageNumber}
+          />
         </Text>
         <Text as='span' pr='5'>
           <SearchTermInput
@@ -117,6 +145,7 @@ export const Gallery: React.FC<IGallery> = ({
             setOrderType={setOrderType}
             setSearchTerm={setSearchTerm}
             searchTerm={searchTerm}
+            setPageNumber={setPageNumber}
           />
         </Text>
         <Text as='span' pr='5'>
@@ -125,6 +154,7 @@ export const Gallery: React.FC<IGallery> = ({
             setOrderType={setOrderType}
             setSearchAttributes={setSearchAttributes}
             setSearchTerm={setSearchTerm}
+            setPageNumber={setPageNumber}
           />
         </Text>
       </Flex>
@@ -133,13 +163,21 @@ export const Gallery: React.FC<IGallery> = ({
           <Spinner />
         </Flex>
       ) : (
-        <SimpleGrid columns={{ sm: 2, md: 4 }} gap='8'>
-          {cards}
-        </SimpleGrid>
+        <Flex
+          flexDirection='column'
+          pt='5'
+          pb='20'
+          justifyContent='center'
+          pr='10'
+          overflowY='scroll'
+          h='100%'
+        >
+          <SimpleGrid columns={{ sm: 2, md: 4 }} gap='8' flex='1'>
+            {cards}
+          </SimpleGrid>
+          <PageController />
+        </Flex>
       )}
-      <Flex pt='5' pb='20' justifyContent='center'>
-        <PageController />
-      </Flex>
     </Grid>
   );
 };
@@ -147,14 +185,17 @@ export const Gallery: React.FC<IGallery> = ({
 interface IShuffleButton {
   setReload: React.Dispatch<React.SetStateAction<boolean>>;
   setOrderType: React.Dispatch<React.SetStateAction<OrderType>>;
+  setPageNumber: React.Dispatch<React.SetStateAction<number>>;
 }
 const ShuffleButton: React.FC<IShuffleButton> = ({
   setReload,
   setOrderType,
+  setPageNumber,
 }) => {
   const onClick: React.MouseEventHandler<HTMLButtonElement> = () => {
     setReload((prev) => !prev);
     setOrderType(OrderType.SHUFFLE);
+    setPageNumber(1);
   };
 
   return (
@@ -171,6 +212,7 @@ interface IClearSearchButton {
   setReload: React.Dispatch<React.SetStateAction<boolean>>;
   setOrderType: React.Dispatch<React.SetStateAction<OrderType>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  setPageNumber: React.Dispatch<React.SetStateAction<number>>;
   setSearchAttributes: React.Dispatch<
     React.SetStateAction<
       Partial<{
@@ -184,12 +226,14 @@ const ClearSearchButton: React.FC<IClearSearchButton> = ({
   setOrderType,
   setSearchAttributes,
   setSearchTerm,
+  setPageNumber,
 }) => {
   const onClick: React.MouseEventHandler<HTMLButtonElement> = () => {
     setReload((prev) => !prev);
     setOrderType(OrderType.ASC);
     setSearchAttributes({});
     setSearchTerm('');
+    setPageNumber(1);
   };
 
   return (
@@ -202,6 +246,7 @@ const ClearSearchButton: React.FC<IClearSearchButton> = ({
 interface ISearchTermInput {
   setReload: React.Dispatch<React.SetStateAction<boolean>>;
   setOrderType: React.Dispatch<React.SetStateAction<OrderType>>;
+  setPageNumber: React.Dispatch<React.SetStateAction<number>>;
   setSearchTerm: React.Dispatch<string>;
   searchTerm: string;
 }
@@ -210,11 +255,13 @@ const SearchTermInput: React.FC<ISearchTermInput> = ({
   setOrderType,
   setSearchTerm,
   searchTerm,
+  setPageNumber,
 }) => {
   const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setReload((prev) => !prev);
     setOrderType(OrderType.ASC);
     setSearchTerm(e.target.value);
+    setPageNumber(1);
   };
 
   return (
