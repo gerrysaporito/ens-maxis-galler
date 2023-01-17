@@ -75,7 +75,7 @@ export const PaginationController: React.FC<{
   ];
 
   const dropdownOptions = new Array(numPages).fill(0).map((v, i) => (
-    <option key={i} value={i + 1} w='full'>
+    <option key={i} value={i + 1} style={{ width: 'full' }}>
       {isMobile ? 'Pg' : 'Page'} {i + 1}
     </option>
   ));
