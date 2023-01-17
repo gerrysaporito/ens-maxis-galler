@@ -8,6 +8,7 @@ import {
   Button,
   Input,
   Stack,
+  Tooltip,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { ImShuffle } from 'react-icons/im';
@@ -226,12 +227,14 @@ const ShuffleButton: React.FC<IShuffleButton> = ({
   };
 
   return (
-    <IconButton
-      onClick={onClick}
-      aria-label='Join our Discord Community'
-      variant='ghost'
-      icon={<ImShuffle />}
-    />
+    <Tooltip label='Get random NFTs for your selected filter parameters.'>
+      <IconButton
+        onClick={onClick}
+        aria-label='Join our Discord Community'
+        variant='ghost'
+        icon={<ImShuffle />}
+      />
+    </Tooltip>
   );
 };
 
@@ -264,9 +267,11 @@ const ClearSearchButton: React.FC<IClearSearchButton> = ({
   };
 
   return (
-    <Button onClick={onClick} variant='ghost'>
-      Clear
-    </Button>
+    <Tooltip label='Clear filter parameters.'>
+      <Button onClick={onClick} variant='ghost'>
+        Clear
+      </Button>
+    </Tooltip>
   );
 };
 
