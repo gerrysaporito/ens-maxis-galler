@@ -14,16 +14,13 @@ export const Footer: React.FC = () => {
       backgroundRepeat='no-repeat'
     >
       <Flex justifyContent='center' flexDirection='column' textAlign='center'>
-        <Text>Made with ❤️ in California by a fellow ENS maxi.</Text>
+        <Text>Made with ❤️ in California by a fellow ENS Maxi.</Text>
         <Text>
           Want to show appreciation?{' '}
           <Link isExternal href={PERSONAL_TWITTER}>
-            Tweet
+            Tweet at me{' '}
           </Link>{' '}
-          at me or send me a Maxi @{' '}
-          <Link isExternal href={PERSONAL_TWITTER}>
-            Saporito.eth
-          </Link>
+          or send me a Maxi @ Saporito.eth
         </Text>
       </Flex>
     </Flex>
