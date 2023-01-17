@@ -1,6 +1,7 @@
 import { Grid, Stack } from '@chakra-ui/react';
 import { useState } from 'react';
 
+import { useIsMobile } from '@app/hooks/useIsMobile';
 import { Attributes } from '@app/interface/attributes';
 
 import { Filter } from './Filter';
@@ -9,6 +10,8 @@ import { Gallery } from './Gallery';
 const AttributesObject = Attributes.toObject();
 
 export const PageLayout: React.FC = () => {
+  const { isMobile } = useIsMobile();
+
   // Attributes used to search NFTs for.
   const [searchAttributes, setSearchAttributes] = useState<
     Partial<{
@@ -19,7 +22,7 @@ export const PageLayout: React.FC = () => {
   return (
     <Grid
       templateColumns={{ sm: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
-      gridGap='10'
+      gridGap={isMobile ? '2' : '10'}
     >
       <Stack gridColumn={{ md: 'span 1' }} id='filter'>
         <Filter
