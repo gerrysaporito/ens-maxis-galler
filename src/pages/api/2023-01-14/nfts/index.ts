@@ -283,7 +283,10 @@ const filterNftsBySearchTerm = ({
   nfts: INft[];
   searchTerm: string;
 }) => {
-  return nfts.filter((nft) =>
-    JSON.stringify(nft).toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  return nfts.filter((nft) => {
+    const metadata = { ...nft.metadata, dna: '', image: '' };
+    return JSON.stringify(metadata)
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+  });
 };
