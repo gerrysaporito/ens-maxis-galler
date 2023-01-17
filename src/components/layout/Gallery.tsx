@@ -7,11 +7,13 @@ import {
   Spinner,
   Button,
   Input,
+  Stack,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { ImShuffle } from 'react-icons/im';
 
 import { NftCard } from '../pure/NftCard';
+import { useIsMobile } from '@app/hooks/useIsMobile';
 import { usePaginationController } from '@app/hooks/usePaginationController';
 import { Attributes } from '@app/interface/attributes';
 import {
@@ -48,6 +50,7 @@ export const Gallery: React.FC<IGallery> = ({
   setSearchAttributes,
 }) => {
   const [nfts, setNfts] = useState<INft[]>([]);
+  const { isMobile } = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [orderType, setOrderType] = useState(OrderType.ASC);
   const [searchTerm, setSearchTerm] = useState('');
@@ -118,45 +121,85 @@ export const Gallery: React.FC<IGallery> = ({
     <NftCard key={nft.metadata.name} nft={nft} />
   ));
 
+  const actionButtons = (
+    <>
+      <Text as='span' pr='5'>
+        <ShuffleButton
+          setReload={setReload}
+          setOrderType={setOrderType}
+          setPageNumber={setPageNumber}
+        />
+      </Text>
+      <Text as='span' pr='5'>
+        <ClearSearchButton
+          setReload={setReload}
+          setOrderType={setOrderType}
+          setSearchAttributes={setSearchAttributes}
+          setSearchTerm={setSearchTerm}
+          setPageNumber={setPageNumber}
+        />
+      </Text>
+    </>
+  );
+
+  const pageSelectors = (
+    <>
+      <Text as='span' pr={isMobile ? '0' : '5'}>
+        <PageChangeSelector />
+      </Text>
+
+      <Flex
+        flexDirection='column'
+        pr={isMobile ? '0' : '5'}
+        justifyContent='center'
+      >
+        <PageController isDropdown />
+      </Flex>
+    </>
+  );
+
   return (
     <Grid
+      w='full'
       gap='5'
-      h='90vh'
-      pr='10'
-      pl='10'
       overflowY='scroll'
       sx={{ '::-webkit-scrollbar': { display: 'none' } }}
+      id='gallery'
     >
-      <Flex justifyContent={{ sm: 'center', md: 'flex-start' }}>
-        <Text as='span' pr='5'>
-          <PageChangeSelector />
-        </Text>
-        <Text as='span' pr='5'>
-          <ShuffleButton
-            setReload={setReload}
-            setOrderType={setOrderType}
-            setPageNumber={setPageNumber}
-          />
-        </Text>
-        <Text as='span' pr='5'>
-          <SearchTermInput
-            setReload={setReload}
-            setOrderType={setOrderType}
-            setSearchTerm={setSearchTerm}
-            searchTerm={searchTerm}
-            setPageNumber={setPageNumber}
-          />
-        </Text>
-        <Text as='span' pr='5'>
-          <ClearSearchButton
-            setReload={setReload}
-            setOrderType={setOrderType}
-            setSearchAttributes={setSearchAttributes}
-            setSearchTerm={setSearchTerm}
-            setPageNumber={setPageNumber}
-          />
-        </Text>
-      </Flex>
+      <Stack>
+        <Flex justifyContent={{ sm: 'space-between', md: 'flex-start' }}>
+          {!isMobile && pageSelectors}
+          {!isMobile && actionButtons}
+          {!isMobile && (
+            <Text as='span'>
+              <SearchTermInput
+                setReload={setReload}
+                setOrderType={setOrderType}
+                setSearchTerm={setSearchTerm}
+                searchTerm={searchTerm}
+                setPageNumber={setPageNumber}
+              />
+            </Text>
+          )}
+          {isMobile && pageSelectors}
+        </Flex>
+        {isMobile && (
+          <Text as='span'>
+            <SearchTermInput
+              setReload={setReload}
+              setOrderType={setOrderType}
+              setSearchTerm={setSearchTerm}
+              searchTerm={searchTerm}
+              setPageNumber={setPageNumber}
+            />
+          </Text>
+        )}
+        {isMobile && (
+          <Flex justifyContent={{ sm: 'center', md: 'flex-start' }}>
+            {actionButtons}
+          </Flex>
+        )}
+      </Stack>
       {isLoading ? (
         <Flex justifyContent='center' alignItems='center' h='100%'>
           <Spinner />
@@ -258,6 +301,11 @@ const SearchTermInput: React.FC<ISearchTermInput> = ({
   };
 
   return (
-    <Input value={searchTerm} onChange={onChange} placeholder='Search by...' />
+    <Input
+      value={searchTerm}
+      onChange={onChange}
+      w='full'
+      placeholder='Search by...'
+    />
   );
 };

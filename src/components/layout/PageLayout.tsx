@@ -1,4 +1,4 @@
-import { Box, Grid } from '@chakra-ui/react';
+import { Grid, Stack } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import { Attributes } from '@app/interface/attributes';
@@ -21,18 +21,18 @@ export const PageLayout: React.FC = () => {
       templateColumns={{ sm: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
       gridGap='10'
     >
-      <Box gridColumn={{ md: 'span 1' }}>
+      <Stack gridColumn={{ md: 'span 1' }} id='filter'>
         <Filter
           searchAttributes={searchAttributes}
           setSearchAttributes={setSearchAttributes}
         />
-      </Box>
-      <Box gridColumn={{ md: 'span 3' }}>
+      </Stack>
+      <Stack gridColumn={{ md: 'span 3' }}>
         <Gallery
           searchAttributes={searchAttributes}
           setSearchAttributes={setSearchAttributes}
         />
-      </Box>
+      </Stack>
     </Grid>
   );
 };

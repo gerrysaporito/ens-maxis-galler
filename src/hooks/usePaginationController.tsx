@@ -49,11 +49,14 @@ export const usePaginationController = ({
     </Select>
   );
 
-  const PageController: React.FC = () => (
+  const PageController: React.FC<{ isDropdown?: boolean }> = ({
+    isDropdown,
+  }) => (
     <PaginationController
       pageNumber={pageNumber}
       setPageNumber={setPageNumber}
       numPages={Math.ceil(resultsSize / limitPerPage)}
+      isDropdown={isDropdown}
     />
   );
 

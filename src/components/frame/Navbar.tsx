@@ -33,14 +33,7 @@ export const Navbar: React.FC = () => {
   ));
 
   return (
-    <Flex
-      pl='10'
-      pr='10'
-      pt='5'
-      pb='5'
-      justifyContent='space-between'
-      alignItems='center'
-    >
+    <Flex pt='5' pb='5' justifyContent='space-between' alignItems='center'>
       <Box width='10' height='10'>
         <EnsMaxisLogo />
       </Box>

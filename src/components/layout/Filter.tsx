@@ -1,7 +1,10 @@
-import { Divider, Heading, Stack, Flex } from '@chakra-ui/react';
+import { Divider, Stack, Flex, Heading, IconButton } from '@chakra-ui/react';
 import type { Dispatch, SetStateAction } from 'react';
+import { useState } from 'react';
+import { FaFilter } from 'react-icons/fa';
 
 import { DropdownCheckbox } from '../pure/DropdownCheckbox';
+import { useIsMobile } from '@app/hooks/useIsMobile';
 import { Attributes } from '@app/interface/attributes';
 
 const AttributesObject = Attributes.toObject();
@@ -23,6 +26,9 @@ export const Filter: React.FC<IFilter> = ({
   searchAttributes,
   setSearchAttributes,
 }) => {
+  const [isOpen, setIsOpen] = useState(true);
+  const { isMobile } = useIsMobile();
+
   // Creating the dropdown list of filter values.
   const filters = Object.keys(AttributesObject).map((attrKey, i) => {
     const key = attrKey as keyof typeof AttributesObject;
@@ -50,21 +56,37 @@ export const Filter: React.FC<IFilter> = ({
   });
 
   return (
-    <Stack height='90vh' pl='10'>
-      <Heading>FILTER</Heading>
-      <Divider />
-      <Flex
-        flexDirection='column'
-        flex='1'
-        overflowY='scroll'
-        sx={{
-          '::-webkit-scrollbar': {
-            display: 'none',
-          },
-        }}
-      >
-        {filters}
-      </Flex>
-    </Stack>
+    <Flex w='full' justifyContent='center'>
+      <Stack w='full'>
+        {isMobile ? (
+          <Flex align='center'>
+            <IconButton
+              onClick={() => setIsOpen((prev) => !prev)}
+              icon={<FaFilter />}
+              aria-label='Filter button'
+            />
+          </Flex>
+        ) : (
+          <Heading>FILTER</Heading>
+        )}
+        {(isOpen || !isMobile) && (
+          <>
+            <Divider />
+            <Flex
+              flexDirection='column'
+              flex='1'
+              overflowY='scroll'
+              sx={{
+                '::-webkit-scrollbar': {
+                  display: 'none',
+                },
+              }}
+            >
+              {filters}
+            </Flex>
+          </>
+        )}
+      </Stack>
+    </Flex>
   );
 };
