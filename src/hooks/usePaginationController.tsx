@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { PaginationController } from '@app/components/frame/PaginationController';
 
+import { useIsMobile } from './useIsMobile';
 import { useUpdateRouterQuery } from './useUpdateRouterQuery';
 
 const pageLimits = [25, 50, 100];
@@ -15,6 +16,7 @@ export const usePaginationController = ({
   const router = useRouter();
   const { query } = router;
   const { updateRouterQuery } = useUpdateRouterQuery();
+  const { isMobile } = useIsMobile();
 
   const [pageNumber, setPageNumber] = useState(
     query.pageNumber && parseInt(query.pageNumber as string) > 0
@@ -41,7 +43,7 @@ export const usePaginationController = ({
 
   const PageChangeSelector: React.FC = () => (
     <Select
-      minW='100px'
+      minW={isMobile ? '100px' : '125px'}
       defaultValue={limitPerPage}
       onChange={onLimitPerPageChange}
     >
