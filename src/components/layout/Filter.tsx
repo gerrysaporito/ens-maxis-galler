@@ -26,7 +26,7 @@ export const Filter: React.FC<IFilter> = ({
   searchAttributes,
   setSearchAttributes,
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const { isMobile } = useIsMobile();
 
   // Creating the dropdown list of filter values.
