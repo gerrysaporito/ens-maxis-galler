@@ -1,6 +1,6 @@
 import { Select } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { PaginationController } from '@app/components/frame/PaginationController';
 
@@ -26,6 +26,10 @@ export const usePaginationController = ({
   );
   const [resultsSize, setResultsSize] = useState(collectionSize);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pageNumber]);
+
   const onLimitPerPageChange: React.ChangeEventHandler<HTMLSelectElement> = (
     e,
   ) => {
@@ -37,7 +41,7 @@ export const usePaginationController = ({
 
   const PageChangeSelector: React.FC = () => (
     <Select
-      width='125px'
+      minW='120px'
       defaultValue={limitPerPage}
       onChange={onLimitPerPageChange}
     >

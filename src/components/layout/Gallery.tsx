@@ -167,19 +167,17 @@ export const Gallery: React.FC<IGallery> = ({
       id='gallery'
     >
       <Stack>
-        <Flex justifyContent={{ sm: 'space-between', md: 'flex-start' }}>
+        <Flex justifyContent={isMobile ? 'space-between' : 'flex-start'}>
           {!isMobile && pageSelectors}
           {!isMobile && actionButtons}
           {!isMobile && (
-            <Text as='span'>
-              <SearchTermInput
-                setReload={setReload}
-                setOrderType={setOrderType}
-                setSearchTerm={setSearchTerm}
-                searchTerm={searchTerm}
-                setPageNumber={setPageNumber}
-              />
-            </Text>
+            <SearchTermInput
+              setReload={setReload}
+              setOrderType={setOrderType}
+              setSearchTerm={setSearchTerm}
+              searchTerm={searchTerm}
+              setPageNumber={setPageNumber}
+            />
           )}
           {isMobile && pageSelectors}
         </Flex>

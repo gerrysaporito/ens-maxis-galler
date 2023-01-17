@@ -26,8 +26,9 @@ export const PaginationController: React.FC<{
     };
   };
 
-  const onDropdownClick: React.ChangeEventHandler<HTMLSelectElement> = (e) =>
+  const onDropdownClick: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setPageNumber(parseInt(e.target.value));
+  };
 
   interface IButtonMeta {
     text: string;
@@ -86,7 +87,7 @@ export const PaginationController: React.FC<{
       id={`${isMobile && 'mobile-'}pagination-controller`}
     >
       {isDropdown ? (
-        <Select value={pageNumber} onChange={onDropdownClick}>
+        <Select value={pageNumber} onChange={onDropdownClick} minW='120px'>
           {dropdownOptions}
         </Select>
       ) : (
