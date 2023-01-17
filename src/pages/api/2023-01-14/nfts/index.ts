@@ -135,19 +135,26 @@ const handlePostNfts = async (
   req: NextApiRequest,
 ): Promise<FunctionReturnType<IGetNfts>> => {
   const body = PostNftsBodySchema.safeParse(req.body);
-
   if (!body.success) {
     const error = `Failed to validate request body`;
     return errorReturnValue({ error, info: body.error.format() });
   }
   const {
     contractAddress,
-    searchAttributes,
+    searchAttributes: _searchAttributes,
     pageNumber,
     limitPerPage,
     orderType,
     searchTerm,
   } = body.data;
+
+  // Remove empty array search properties to avoid searching for nfts with no attributes.
+  const searchAttributes = { ..._searchAttributes };
+  for (const key of Object.keys(searchAttributes)) {
+    if (!searchAttributes[key].length) {
+      delete searchAttributes[key];
+    }
+  }
 
   // Check if contract address passed is valid.
   const validContractAddressResult = isValidContractAddress(contractAddress);
@@ -227,11 +234,13 @@ const filterNftsByAttributes = ({
     let match = false;
     if (search) {
       for (const key of Object.keys(search)) {
-        const _key = key as keyof typeof nft.metadata.attributes;
-        const nftAttr = nft.metadata.attributes[_key];
-        for (const searchAttr of search[_key]) {
-          if (String(nftAttr).toLowerCase() === searchAttr.toLowerCase()) {
-            match = true;
+        if (search[key].length) {
+          const _key = key as keyof typeof nft.metadata.attributes;
+          const nftAttr = nft.metadata.attributes[_key];
+          for (const searchAttr of search[_key]) {
+            if (String(nftAttr).toLowerCase() === searchAttr.toLowerCase()) {
+              match = true;
+            }
           }
         }
       }
