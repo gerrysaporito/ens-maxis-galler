@@ -123,14 +123,14 @@ export const Gallery: React.FC<IGallery> = ({
 
   const actionButtons = (
     <>
-      <Text as='span' pr='5'>
+      <Text as='span'>
         <ShuffleButton
           setReload={setReload}
           setOrderType={setOrderType}
           setPageNumber={setPageNumber}
         />
       </Text>
-      <Text as='span' pr='5'>
+      <Text as='span'>
         <ClearSearchButton
           setReload={setReload}
           setOrderType={setOrderType}
@@ -144,7 +144,7 @@ export const Gallery: React.FC<IGallery> = ({
 
   const pageSelectors = (
     <>
-      <Text as='span' pr={isMobile ? '0' : '5'}>
+      <Text as='span' pr={isMobile ? '1' : '5'}>
         <PageChangeSelector />
       </Text>
 
@@ -158,6 +158,16 @@ export const Gallery: React.FC<IGallery> = ({
     </>
   );
 
+  const searchInput = (
+    <SearchTermInput
+      setReload={setReload}
+      setOrderType={setOrderType}
+      setSearchTerm={setSearchTerm}
+      searchTerm={searchTerm}
+      setPageNumber={setPageNumber}
+    />
+  );
+
   return (
     <Grid
       w='full'
@@ -169,34 +179,17 @@ export const Gallery: React.FC<IGallery> = ({
       <Stack>
         <Flex justifyContent={isMobile ? 'space-between' : 'flex-start'}>
           {!isMobile && pageSelectors}
+          {!isMobile && searchInput}
           {!isMobile && actionButtons}
-          {!isMobile && (
-            <SearchTermInput
-              setReload={setReload}
-              setOrderType={setOrderType}
-              setSearchTerm={setSearchTerm}
-              searchTerm={searchTerm}
-              setPageNumber={setPageNumber}
-            />
+          {isMobile && (
+            <>
+              {pageSelectors}
+              <Flex justifyContent='flex-end'>{actionButtons}</Flex>
+            </>
           )}
-          {isMobile && pageSelectors}
         </Flex>
-        {isMobile && (
-          <Text as='span'>
-            <SearchTermInput
-              setReload={setReload}
-              setOrderType={setOrderType}
-              setSearchTerm={setSearchTerm}
-              searchTerm={searchTerm}
-              setPageNumber={setPageNumber}
-            />
-          </Text>
-        )}
-        {isMobile && (
-          <Flex justifyContent={{ sm: 'center', md: 'flex-start' }}>
-            {actionButtons}
-          </Flex>
-        )}
+        {isMobile && <Text as='span'>{searchInput}</Text>}
+        {/* {isMobile && <Flex justifyContent='flex-end'>{actionButtons}</Flex>} */}
       </Stack>
       {isLoading ? (
         <Flex justifyContent='center' alignItems='center' h='100%'>

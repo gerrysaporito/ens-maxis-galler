@@ -41,7 +41,7 @@ export const usePaginationController = ({
 
   const PageChangeSelector: React.FC = () => (
     <Select
-      minW='120px'
+      minW='100px'
       defaultValue={limitPerPage}
       onChange={onLimitPerPageChange}
     >

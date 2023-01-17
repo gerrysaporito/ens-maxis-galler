@@ -87,7 +87,7 @@ export const PaginationController: React.FC<{
       id={`${isMobile && 'mobile-'}pagination-controller`}
     >
       {isDropdown ? (
-        <Select value={pageNumber} onChange={onDropdownClick} minW='120px'>
+        <Select value={pageNumber} onChange={onDropdownClick} minW='100px'>
           {dropdownOptions}
         </Select>
       ) : (
