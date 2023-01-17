@@ -18,9 +18,9 @@ export const NftCard: React.FC<INftCard> = ({ nft }) => {
         <Image
           borderRadius='lg'
           src={imgSource}
-          fallbackSrc='/assets/EnsMaxisLogo.svg'
+          fallbackSrc='/assets/EnsMaxisLogo.webp'
           alt={nft.metadata.name}
-          objectFit='contain'
+          objectFit='fill'
           w='full'
         />
       </Box>
