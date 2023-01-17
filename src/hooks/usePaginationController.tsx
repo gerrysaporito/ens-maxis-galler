@@ -7,7 +7,7 @@ import { PaginationController } from '@app/components/frame/PaginationController
 import { useIsMobile } from './useIsMobile';
 import { useUpdateRouterQuery } from './useUpdateRouterQuery';
 
-const pageLimits = [25, 50, 100];
+const pageLimits = [20, 40, 60, 80, 100];
 export const usePaginationController = ({
   collectionSize,
 }: {

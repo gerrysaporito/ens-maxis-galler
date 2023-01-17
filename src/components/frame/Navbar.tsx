@@ -1,8 +1,9 @@
-import { Box, Flex, IconButton, Link } from '@chakra-ui/react';
+import { Flex, IconButton, Link } from '@chakra-ui/react';
 import { FaDiscord, FaTwitter, FaGlobe } from 'react-icons/fa';
 import type { IconType } from 'react-icons/lib';
 
 import { EnsMaxisLogo } from '../pure/EnsMaxisLogo';
+import { ENS_MAXIS_WEBSITE } from '@app/interface/routes';
 
 const SOCIAL_LINKS = [
   {
@@ -34,9 +35,9 @@ export const Navbar: React.FC = () => {
 
   return (
     <Flex pt='5' pb='5' justifyContent='space-between' alignItems='center'>
-      <Box width='10' height='10'>
+      <Link href={ENS_MAXIS_WEBSITE} isExternal width='10' height='10'>
         <EnsMaxisLogo />
-      </Box>
+      </Link>
       <Flex>{socialLinks}</Flex>
     </Flex>
   );

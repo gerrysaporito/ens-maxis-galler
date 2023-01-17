@@ -3,6 +3,9 @@ import { join } from 'path';
 import { getContractChainFromContractAddress } from './blockchain';
 import type { FunctionReturnType } from './FunctionReturnType';
 
+export const ENS_MAXIS_WEBSITE = 'https://ensmaxis.com/';
+export const PERSONAL_TWITTER = 'https://twitter.com/saporito_eth/';
+
 export const BASE_URL =
   process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL
     ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL ?? process.env.VERCEL_URL}`

@@ -2,7 +2,7 @@ import { ChakraProvider, Flex, Stack } from '@chakra-ui/react';
 import type { AppProps } from 'next/app';
 
 import { Navbar } from '@app/components/frame/Navbar';
-import { useIsMobile } from '@app/hooks/useIsMobile';
+import { Footer } from '@app/components/pure/Footer';
 import LocalStorage from '@app/models/LocalStorage';
 
 const initializeLocalStorage = () => {
@@ -24,16 +24,21 @@ const initializeLocalStorage = () => {
 initializeLocalStorage();
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { isMobile } = useIsMobile();
-
   return (
     <ChakraProvider>
-      <Flex justifyContent='center'>
-        <Stack w='80%' maxW={isMobile ? '80%' : '90%'}>
-          <Navbar />
-          <Component {...pageProps} />
-        </Stack>
-      </Flex>{' '}
+      <Stack
+      // backgroundImage='linear-gradient(90deg, #52E1FF 0%, #5442FC 100%)'
+      // backgroundSize='cover'
+      // backgroundRepeat='no-repeat'
+      >
+        <Flex justifyContent='center'>
+          <Stack w='90%' maxW='1250px'>
+            <Navbar />
+            <Component {...pageProps} />
+          </Stack>
+        </Flex>
+        <Footer />
+      </Stack>
     </ChakraProvider>
   );
 }

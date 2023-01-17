@@ -11,10 +11,18 @@ export const NftCard: React.FC<INftCard> = ({ nft }) => {
   const imgSource = nft.metadata.image.includes('ipfs://')
     ? ipfsToHttp(nft.metadata.image)
     : nft.metadata.image;
+
   return (
     <Stack>
-      <Box boxShadow='xl' borderRadius='lg'>
-        <Image borderRadius='lg' src={imgSource} alt={nft.metadata.name} />
+      <Box boxShadow='xl' borderRadius='lg' w='full' h='full'>
+        <Image
+          borderRadius='lg'
+          src={imgSource}
+          fallbackSrc='/assets/EnsMaxisLogo.svg'
+          alt={nft.metadata.name}
+          objectFit='contain'
+          w='full'
+        />
       </Box>
       <Stack textAlign='center'>
         <Text fontSize='xs' variant='s'>

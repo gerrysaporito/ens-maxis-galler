@@ -200,7 +200,7 @@ export const Gallery: React.FC<IGallery> = ({
           <SimpleGrid columns={{ sm: 2, md: 4 }} gap='8' flex='1'>
             {cards}
           </SimpleGrid>
-          <Flex flexDirection='column' pt='5' pb='20' justifyContent='center'>
+          <Flex flexDirection='column' pt='5' pb='10' justifyContent='center'>
             <PageController />
           </Flex>
         </>
