@@ -15,10 +15,11 @@ import {
 import type { SetStateAction } from 'react';
 import { GiDna1 } from 'react-icons/gi';
 
+import { useIsMobile } from '@app/hooks/useIsMobile';
 import { Attributes } from '@app/interface/attributes';
 import type { INft } from '@app/interface/nft';
 import { getMarketplaceUrls, ipfsToHttp } from '@app/interface/routes';
-import { formatLeadingZeros } from '@app/lib/string';
+import { formatLeadingZeros, shortenString } from '@app/lib/string';
 
 import { SocialIconLink } from './SocialIconLink';
 
@@ -50,6 +51,7 @@ export const NftModal: React.FC<INftModal> = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
+  const { isMobile } = useIsMobile();
   const imgSource = nft.metadata.image.includes('ipfs://')
     ? ipfsToHttp(nft.metadata.image)
     : nft.metadata.image;
@@ -57,17 +59,18 @@ export const NftModal: React.FC<INftModal> = ({
   return (
     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <ModalOverlay />
-      <ModalContent width='80%' minW='50vw' maxW='1250px'>
+      <ModalContent width={isMobile ? '90%' : '80%'} minW='50vw' maxW='1250px'>
         <ModalCloseButton />
-        <ModalBody p='10'>
+        <ModalBody p={isMobile ? '5' : '10'}>
           <SimpleGrid columns={{ sm: 1, md: 2 }} gap='8'>
             <SimpleGrid gap='10'>
               <Image
                 src={imgSource}
                 fallbackSrc='/assets/EnsMaxisLogo.webp'
                 alt={nft.metadata.name}
-                objectFit='fill'
+                objectFit='cover'
                 w='full'
+                h='full'
                 borderRadius='lg'
               />
             </SimpleGrid>
@@ -78,12 +81,6 @@ export const NftModal: React.FC<INftModal> = ({
               <Box>
                 <ModalNftAttributes nft={nft} />
               </Box>
-              {/* <Box>
-                <NftOwnerCard
-                  walletAddress={nft.minter_address}
-                  tokenId={nft.token_id}
-                />
-              </Box> */}
               <Box>
                 <ModalNftFingerprint nft={nft} />
               </Box>
@@ -115,7 +112,7 @@ const ModalHeading: React.FC<{ nft: INft }> = ({ nft }) => {
           #{formatLeadingZeros(nft.token_id)}{' '}
         </Text>
       </Flex>
-      <SimpleGrid columns={{ sm: 3 }} gap='2'>
+      <SimpleGrid columns='3' gap='2'>
         <Link href={opensea} isExternal color='blue'>
           <Image src='/assets/OpenseaLogo.svg' alt='Opensea logo' w='25px' />
         </Link>
@@ -131,12 +128,13 @@ const ModalHeading: React.FC<{ nft: INft }> = ({ nft }) => {
 };
 
 const ModalNftAttributes: React.FC<{ nft: INft }> = ({ nft }) => {
-  const traits =
-    Attributes.traits() ??
-    Object.keys(nft.metadata.attributes).filter(
-      (key) =>
-        nft.metadata.attributes[key as keyof typeof nft.metadata.attributes],
-    );
+  const { isMobile } = useIsMobile();
+  const traits = isMobile
+    ? Object.keys(nft.metadata.attributes).filter(
+        (key) =>
+          nft.metadata.attributes[key as keyof typeof nft.metadata.attributes],
+      )
+    : Attributes.traits();
   const mapTraits = (_traits: string[]) =>
     _traits.map((trait) => {
       return (
@@ -186,6 +184,7 @@ const ModalNftAttributeItem: React.FC<{
 );
 
 const ModalNftFingerprint: React.FC<{ nft: INft }> = ({ nft }) => {
+  const { isMobile } = useIsMobile();
   const { etherscan } = getMarketplaceUrls({
     tokenId: nft.token_id,
   });
@@ -209,7 +208,9 @@ const ModalNftFingerprint: React.FC<{ nft: INft }> = ({ nft }) => {
           <Text as='sub' color='gray'>
             DNA
           </Text>
-          <Text fontSize='sm'>{nft.metadata.dna}</Text>
+          <Text fontSize='sm'>
+            {isMobile ? shortenString(nft.metadata.dna) : nft.metadata.dna}
+          </Text>
         </Stack>
       </Flex>
     </Flex>
