@@ -173,6 +173,7 @@ export const Gallery: React.FC<IGallery> = ({
   return (
     <Grid
       w='full'
+      h='full'
       gap='5'
       overflowY='scroll'
       sx={{ '::-webkit-scrollbar': { display: 'none' } }}
