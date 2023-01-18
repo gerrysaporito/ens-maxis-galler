@@ -173,7 +173,6 @@ export const Gallery: React.FC<IGallery> = ({
   return (
     <Grid
       w='full'
-      h='full'
       gap='5'
       overflowY='scroll'
       sx={{ '::-webkit-scrollbar': { display: 'none' } }}
@@ -195,7 +194,7 @@ export const Gallery: React.FC<IGallery> = ({
         {/* {isMobile && <Flex justifyContent='flex-end'>{actionButtons}</Flex>} */}
       </Stack>
       {isLoading ? (
-        <Flex justifyContent='center' alignItems='center' h='100%'>
+        <Flex justifyContent='center' alignItems='center' h='200px'>
           <Spinner />
         </Flex>
       ) : (
