@@ -13,12 +13,16 @@ import {
   Link,
   Stack,
 } from '@chakra-ui/react';
+import Sub from 'date-fns/sub';
 import type { SetStateAction } from 'react';
+import { FaFingerprint } from 'react-icons/fa';
 
 import { useIsMobile } from '@app/hooks/useIsMobile';
 import type { INft } from '@app/interface/nft';
 import { getMarketplaceUrls, ipfsToHttp } from '@app/interface/routes';
 import { formatLeadingZeros } from '@app/lib/string';
+
+import { SocialIconLink } from './SocialIconLink';
 
 interface INftModal {
   nft: INft;
@@ -38,7 +42,7 @@ export const NftModal: React.FC<INftModal> = ({
   return (
     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <ModalOverlay />
-      <ModalContent minW='50vw' maxW='1250px'>
+      <ModalContent width='80%' minW='50vw' maxW='1250px'>
         <ModalCloseButton />
         <ModalBody p='10'>
           <SimpleGrid columns={{ sm: 1, md: 2 }} gap='10'>
@@ -48,11 +52,13 @@ export const NftModal: React.FC<INftModal> = ({
               alt={nft.metadata.name}
               objectFit='fill'
               w='full'
+              borderRadius='lg'
             />
-            <Stack>
+            <Flex flexDirection='column' justifyContent='space-between'>
               <ModalHeading nft={nft} />
-              <Text fontSize='md'>No. {nft.token_id}</Text>
-            </Stack>
+              <ModalNftAttributes nft={nft} />
+              <ModalNftFingerprint nft={nft} />
+            </Flex>
           </SimpleGrid>
         </ModalBody>
       </ModalContent>
@@ -93,12 +99,43 @@ const ModalHeading: React.FC<{ nft: INft }> = ({ nft }) => {
   );
 };
 
-const AttributesList: React.FC<{ nft: INft }> = ({ nft }) => {
+const ModalNftAttributes: React.FC<{ nft: INft }> = ({ nft }) => {
   const { isMobile } = useIsMobile();
 
   return (
     <Flex flexDirection={isMobile ? 'column' : 'row'}>
-      <Stack>{/* <Labe */}</Stack>
+      <Stack>{/* Hello */}</Stack>
+    </Flex>
+  );
+};
+
+const ModalNftFingerprint: React.FC<{ nft: INft }> = ({ nft }) => {
+  const { etherscan } = getMarketplaceUrls({
+    tokenId: nft.token_id,
+  });
+
+  return (
+    <Flex
+      alignItems='center'
+      justifyContent='space-between'
+      p='4'
+      borderRadius='md'
+      backgroundColor='#88888844'
+    >
+      <Flex alignItems='center'>
+        <SocialIconLink
+          fontSize='2xl'
+          href={etherscan}
+          SocialIcon={FaFingerprint}
+          label='Etherscan'
+        />
+        <Stack>
+          <Text as='sub' variant='subtle'>
+            Fingerprint
+          </Text>
+          <Text fontSize='sm'>{nft.token_hash}</Text>
+        </Stack>
+      </Flex>
     </Flex>
   );
 };

@@ -46,9 +46,10 @@ export const getMarketplaceUrls = ({
   opensea: string;
   looksrare: string;
   ensvision: string;
+  etherscan: string;
 } => ({
   opensea: `https://opensea.io/assets/ethereum/${ENS_MAXIS_CONTRACT_ADDRESS}/${tokenId}`,
   looksrare: `https://looksrare.org/collections/${ENS_MAXIS_CONTRACT_ADDRESS}/${tokenId}`,
-  // eslint-disable-next-line sonarjs/no-nested-template-literals
   ensvision: `https://ens.vision/name/${formatLeadingZeros(tokenId)}`,
+  etherscan: `https://etherscan.io/token/${ENS_MAXIS_CONTRACT_ADDRESS}?a=${tokenId}`,
 });

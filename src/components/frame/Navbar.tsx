@@ -3,6 +3,7 @@ import { FaDiscord, FaTwitter, FaGlobe } from 'react-icons/fa';
 import type { IconType } from 'react-icons/lib';
 
 import { EnsMaxisLogo } from '../pure/EnsMaxisLogo';
+import { SocialIconLink } from '../pure/SocialIconLink';
 import { ENS_MAXIS_WEBSITE } from '@app/interface/routes';
 
 const SOCIAL_LINKS = [
@@ -40,22 +41,5 @@ export const Navbar: React.FC = () => {
       </Link>
       <Flex>{socialLinks}</Flex>
     </Flex>
-  );
-};
-
-interface ISocialIconLink {
-  href: string;
-  label: string;
-  SocialIcon: IconType;
-}
-const SocialIconLink: React.FC<ISocialIconLink> = ({
-  href,
-  SocialIcon,
-  label,
-}) => {
-  return (
-    <Link href={href} isExternal>
-      <IconButton aria-label={label} variant='ghost' icon={<SocialIcon />} />
-    </Link>
   );
 };
