@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import type { INft } from '@app/interface/nft';
 import { ipfsToHttp } from '@app/interface/routes';
+import { formatLeadingZeros } from '@app/lib/string';
 
 import { NftModal } from './NftModal';
 
@@ -33,7 +34,7 @@ export const NftCard: React.FC<INftCard> = ({ nft }) => {
         <Text fontSize='xs' variant='s'>
           {nft.name.toUpperCase()}
         </Text>
-        <Text fontSize='md'>No. {nft.token_id}</Text>
+        <Text fontSize='md'>No. {formatLeadingZeros(nft.token_id)}</Text>
         <NftModal
           nft={nft}
           isModalOpen={isModalOpen}

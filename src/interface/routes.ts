@@ -1,6 +1,9 @@
 import { join } from 'path';
 
+import { formatLeadingZeros } from '@app/lib/string';
+
 import { getContractChainFromContractAddress } from './blockchain';
+import { ENS_MAXIS_CONTRACT_ADDRESS } from './constants';
 import type { FunctionReturnType } from './FunctionReturnType';
 
 export const BASE_URL =
@@ -30,7 +33,22 @@ export const getFileLocation = (
 };
 
 // External
-export const ipfsToHttp = (url: string) =>
-  url.replace('ipfs://', 'https://ipfs.io/ipfs/');
 export const ENS_MAXIS_WEBSITE = 'https://ensmaxis.com/';
 export const PERSONAL_TWITTER = 'https://twitter.com/saporito_eth/';
+export const ipfsToHttp = (url: string) =>
+  url.replace('ipfs://', 'https://ipfs.io/ipfs/');
+
+export const getMarketplaceUrls = ({
+  tokenId,
+}: {
+  tokenId: number | string;
+}): {
+  opensea: string;
+  looksrare: string;
+  ensvision: string;
+} => ({
+  opensea: `https://opensea.io/assets/ethereum/${ENS_MAXIS_CONTRACT_ADDRESS}/${tokenId}`,
+  looksrare: `https://looksrare.org/collections/${ENS_MAXIS_CONTRACT_ADDRESS}/${tokenId}`,
+  // eslint-disable-next-line sonarjs/no-nested-template-literals
+  ensvision: `https://ens.vision/name/${formatLeadingZeros(tokenId)}`,
+});
