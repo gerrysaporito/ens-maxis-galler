@@ -112,6 +112,7 @@ const ModalHeading: React.FC<{ nft: INft }> = ({ nft }) => {
           #{formatLeadingZeros(nft.token_id)}{' '}
         </Text>
       </Flex>
+      {/* @ts-ignore */}
       <SimpleGrid columns='3' gap='2'>
         <Link href={opensea} isExternal color='blue'>
           <Image src='/assets/OpenseaLogo.svg' alt='Opensea logo' w='25px' />
