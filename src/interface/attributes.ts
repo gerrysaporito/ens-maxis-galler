@@ -1,5 +1,27 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 export class Attributes {
+  static traits() {
+    return Object.keys(this.toObject());
+  }
+
+  static toObject() {
+    return {
+      Avatar: [...this.Avatar],
+      Background: [...this.Background],
+      MaxisRing: [...this.MaxisRing],
+      Body: [...this.Body],
+      Head: [...this.Head],
+      Eyes: [...this.Eyes],
+      Mouth: [...this.Mouth],
+      Hair: [...this.Hair],
+      Clothing: [...this.Clothing],
+      Nose: [...this.Nose],
+      Eyewear: [...this.Eyewear],
+      Accessory: [...this.Accessory],
+      Headwear: [...this.Headwear],
+    };
+  }
+
   static Avatar = [
     'Zombie',
     'Male',
@@ -272,22 +294,4 @@ export class Attributes {
     'Sedge Hat',
     'Poker Hat',
   ] as const;
-
-  static toObject() {
-    return {
-      Avatar: [...this.Avatar],
-      Background: [...this.Background],
-      MaxisRing: [...this.MaxisRing],
-      Body: [...this.Body],
-      Head: [...this.Head],
-      Eyes: [...this.Eyes],
-      Mouth: [...this.Mouth],
-      Hair: [...this.Hair],
-      Clothing: [...this.Clothing],
-      Nose: [...this.Nose],
-      Eyewear: [...this.Eyewear],
-      Accessory: [...this.Accessory],
-      Headwear: [...this.Headwear],
-    };
-  }
 }

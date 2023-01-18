@@ -8,21 +8,36 @@ import {
   Text,
   Flex,
   SimpleGrid,
-  Heading,
-  Icon,
   Link,
   Stack,
+  Box,
 } from '@chakra-ui/react';
-import Sub from 'date-fns/sub';
 import type { SetStateAction } from 'react';
-import { FaFingerprint } from 'react-icons/fa';
+import { GiDna1 } from 'react-icons/gi';
 
-import { useIsMobile } from '@app/hooks/useIsMobile';
+import { Attributes } from '@app/interface/attributes';
 import type { INft } from '@app/interface/nft';
 import { getMarketplaceUrls, ipfsToHttp } from '@app/interface/routes';
 import { formatLeadingZeros } from '@app/lib/string';
 
 import { SocialIconLink } from './SocialIconLink';
+
+const ModalTraitsIconMap: { [key: string]: string } = {
+  Avatar: '/assets/EnsMaxisLogo.svg',
+  Background: '/assets/EnsMaxisLogo.svg',
+  'Maxis Ring': '/assets/EnsMaxisLogo.svg',
+  MaxisRing: '/assets/EnsMaxisLogo.svg',
+  Body: '/assets/EnsMaxisLogo.svg',
+  Head: '/assets/EnsMaxisLogo.svg',
+  Eyes: '/assets/EnsMaxisLogo.svg',
+  Mouth: '/assets/EnsMaxisLogo.svg',
+  Hair: '/assets/EnsMaxisLogo.svg',
+  Clothing: '/assets/EnsMaxisLogo.svg',
+  Nose: '/assets/EnsMaxisLogo.svg',
+  Eyewear: '/assets/EnsMaxisLogo.svg',
+  Accessory: '/assets/EnsMaxisLogo.svg',
+  Headwear: '/assets/EnsMaxisLogo.svg',
+};
 
 interface INftModal {
   nft: INft;
@@ -45,20 +60,34 @@ export const NftModal: React.FC<INftModal> = ({
       <ModalContent width='80%' minW='50vw' maxW='1250px'>
         <ModalCloseButton />
         <ModalBody p='10'>
-          <SimpleGrid columns={{ sm: 1, md: 2 }} gap='10'>
-            <Image
-              src={imgSource}
-              fallbackSrc='/assets/EnsMaxisLogo.webp'
-              alt={nft.metadata.name}
-              objectFit='fill'
-              w='full'
-              borderRadius='lg'
-            />
-            <Flex flexDirection='column' justifyContent='space-between'>
-              <ModalHeading nft={nft} />
-              <ModalNftAttributes nft={nft} />
-              <ModalNftFingerprint nft={nft} />
-            </Flex>
+          <SimpleGrid columns={{ sm: 1, md: 2 }} gap='8'>
+            <SimpleGrid gap='10'>
+              <Image
+                src={imgSource}
+                fallbackSrc='/assets/EnsMaxisLogo.webp'
+                alt={nft.metadata.name}
+                objectFit='fill'
+                w='full'
+                borderRadius='lg'
+              />
+            </SimpleGrid>
+            <SimpleGrid gap='8'>
+              <Box>
+                <ModalHeading nft={nft} />
+              </Box>
+              <Box>
+                <ModalNftAttributes nft={nft} />
+              </Box>
+              {/* <Box>
+                <NftOwnerCard
+                  walletAddress={nft.minter_address}
+                  tokenId={nft.token_id}
+                />
+              </Box> */}
+              <Box>
+                <ModalNftFingerprint nft={nft} />
+              </Box>
+            </SimpleGrid>
           </SimpleGrid>
         </ModalBody>
       </ModalContent>
@@ -78,21 +107,23 @@ const ModalHeading: React.FC<{ nft: INft }> = ({ nft }) => {
       borderRadius='md'
       backgroundColor='#88888844'
     >
-      <Stack>
-        <Heading fontSize='lg' fontWeight='extrabold'>
+      <Flex flexDir='column' alignItems='flex-start'>
+        <Text as='span' fontSize='sm' color='gray'>
           {nft.name.toUpperCase()}
-        </Heading>
-        <Text fontSize='3xl'>#{formatLeadingZeros(nft.token_id)}</Text>
-      </Stack>
+        </Text>
+        <Text as='span' fontSize='xl'>
+          #{formatLeadingZeros(nft.token_id)}{' '}
+        </Text>
+      </Flex>
       <SimpleGrid columns={{ sm: 3 }} gap='2'>
         <Link href={opensea} isExternal color='blue'>
-          <Image src='/assets/OpenseaLogo.svg' alt='Opensea logo' w='35px' />
+          <Image src='/assets/OpenseaLogo.svg' alt='Opensea logo' w='25px' />
         </Link>
         <Link href={looksrare} isExternal>
-          <Image src='/assets/LooksRareLogo.svg' alt='Opensea logo' w='35px' />
+          <Image src='/assets/LooksRareLogo.svg' alt='Opensea logo' w='25px' />
         </Link>
         <Link href={ensvision} isExternal>
-          <Image src='/assets/EnsVisionLogo.svg' alt='Opensea logo' w='35px' />
+          <Image src='/assets/EnsVisionLogo.svg' alt='Opensea logo' w='25px' />
         </Link>
       </SimpleGrid>
     </Flex>
@@ -100,14 +131,59 @@ const ModalHeading: React.FC<{ nft: INft }> = ({ nft }) => {
 };
 
 const ModalNftAttributes: React.FC<{ nft: INft }> = ({ nft }) => {
-  const { isMobile } = useIsMobile();
+  const traits =
+    Attributes.traits() ??
+    Object.keys(nft.metadata.attributes).filter(
+      (key) =>
+        nft.metadata.attributes[key as keyof typeof nft.metadata.attributes],
+    );
+  const mapTraits = (_traits: string[]) =>
+    _traits.map((trait) => {
+      return (
+        <ModalNftAttributeItem
+          key={trait}
+          trait={trait}
+          iconSrc={ModalTraitsIconMap[trait]}
+          attributes={nft.metadata.attributes as Record<string, string>}
+        />
+      );
+    });
+
+  const thirdLength = Math.ceil(traits.length / 3);
+  const colOne = mapTraits(traits.slice(0, thirdLength));
+  const colTwo = mapTraits(traits.slice(thirdLength, thirdLength * 2));
+  const colThree = mapTraits(traits.slice(thirdLength * 2, traits.length));
 
   return (
-    <Flex flexDirection={isMobile ? 'column' : 'row'}>
-      <Stack>{/* Hello */}</Stack>
-    </Flex>
+    <SimpleGrid columns={{ sm: 1, md: 3 }} gap='4'>
+      <SimpleGrid gap='4'>{colOne}</SimpleGrid>
+      <SimpleGrid gap='4'>{colTwo}</SimpleGrid>
+      <SimpleGrid gap='4'>
+        {colThree}
+        <Text />
+        <Text />
+      </SimpleGrid>
+    </SimpleGrid>
   );
 };
+
+const ModalNftAttributeItem: React.FC<{
+  trait: string;
+  iconSrc: string;
+  attributes: Record<string, string>;
+}> = ({ trait, iconSrc, attributes }) => (
+  <Flex p='2' borderRadius='md' backgroundColor='#88888844'>
+    <Box>
+      <Image src={iconSrc} alt={`${trait} icon`} />
+    </Box>
+    <Stack>
+      <Text as='sub' fontSize='xs' color='gray'>
+        {trait.toUpperCase()}:
+      </Text>
+      <Text fontSize='md'>{attributes[trait]}</Text>
+    </Stack>
+  </Flex>
+);
 
 const ModalNftFingerprint: React.FC<{ nft: INft }> = ({ nft }) => {
   const { etherscan } = getMarketplaceUrls({
@@ -126,14 +202,14 @@ const ModalNftFingerprint: React.FC<{ nft: INft }> = ({ nft }) => {
         <SocialIconLink
           fontSize='2xl'
           href={etherscan}
-          SocialIcon={FaFingerprint}
+          SocialIcon={GiDna1}
           label='Etherscan'
         />
         <Stack>
-          <Text as='sub' variant='subtle'>
-            Fingerprint
+          <Text as='sub' color='gray'>
+            DNA
           </Text>
-          <Text fontSize='sm'>{nft.token_hash}</Text>
+          <Text fontSize='sm'>{nft.metadata.dna}</Text>
         </Stack>
       </Flex>
     </Flex>
