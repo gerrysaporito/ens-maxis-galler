@@ -26,19 +26,21 @@ initializeLocalStorage();
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
-      <Stack
-      // backgroundImage='linear-gradient(90deg, #52E1FF 0%, #5442FC 100%)'
-      // backgroundSize='cover'
-      // backgroundRepeat='no-repeat'
+      <Flex
+        flexDirection='column'
+        // backgroundImage='linear-gradient(90deg, #52E1FF 0%, #5442FC 100%)'
+        // backgroundSize='cover'
+        // backgroundRepeat='no-repeat'
+        minH='100vh'
       >
-        <Flex justifyContent='center'>
+        <Flex justifyContent='center' flex='1'>
           <Stack w='90%' maxW='1250px'>
             <Navbar />
             <Component {...pageProps} />
           </Stack>
         </Flex>
         <Footer />
-      </Stack>
+      </Flex>
     </ChakraProvider>
   );
 }

@@ -44,7 +44,7 @@ export const Filter: React.FC<IFilter> = ({
     return (
       <>
         <DropdownCheckbox
-          key={key + i.toString()}
+          key={AttributesObject[key] + i.toString()}
           label={key}
           options={AttributesObject[key]}
           optionsChecked={searchAttributes[key] ?? []}
