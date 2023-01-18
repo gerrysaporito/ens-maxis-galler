@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { ImShuffle } from 'react-icons/im';
 
+import { FadeFrom } from '../animation/FadeFrom';
 import { NftCard } from '../pure/NftCard';
 import { useIsMobile } from '@app/hooks/useIsMobile';
 import { usePaginationController } from '@app/hooks/usePaginationController';
@@ -197,14 +198,14 @@ export const Gallery: React.FC<IGallery> = ({
           <Spinner />
         </Flex>
       ) : (
-        <>
+        <FadeFrom direction='bottom'>
           <SimpleGrid columns={{ sm: 2, md: 4 }} gap='8' flex='1'>
             {cards}
           </SimpleGrid>
           <Flex flexDirection='column' pt='5' pb='10' justifyContent='center'>
             <PageController />
-          </Flex>
-        </>
+          </Flex>{' '}
+        </FadeFrom>
       )}
     </Grid>
   );

@@ -3,13 +3,12 @@ import { useEffect, useRef } from 'react';
 
 import { useOnScreen } from '@app/hooks/useOnScreen';
 
-export const FadeFrom = ({
-  children,
-  direction,
-}: {
+interface IFadeFrom {
   direction: 'bottom' | 'left' | 'right';
   children: React.ReactNode;
-}) => {
+}
+
+export const FadeFrom: React.FC<IFadeFrom> = ({ children, direction }) => {
   const controls = useAnimation();
   const rootRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const onScreen = useOnScreen(rootRef);

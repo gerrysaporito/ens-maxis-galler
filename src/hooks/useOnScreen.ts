@@ -7,7 +7,6 @@ export function useOnScreen(
   const [isIntersecting, setIntersecting] = useState(false);
 
   useEffect(() => {
-    const refCopy = ref;
     const observer = new IntersectionObserver(
       ([entry]) => setIntersecting(entry.isIntersecting),
       { rootMargin },
@@ -15,9 +14,6 @@ export function useOnScreen(
     if (ref.current) {
       observer.observe(ref.current);
     }
-    return () => {
-      observer.unobserve(refCopy.current);
-    };
   }, [ref, rootMargin]);
 
   return isIntersecting;
