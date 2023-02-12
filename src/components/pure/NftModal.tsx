@@ -137,10 +137,10 @@ const ModalNftAttributes: React.FC<{ nft: INft }> = ({ nft }) => {
       )
     : Attributes.traits();
   const mapTraits = (_traits: string[]) =>
-    _traits.map((trait) => {
+    _traits.map((trait, i) => {
       return (
         <ModalNftAttributeItem
-          key={trait}
+          key={i}
           trait={trait}
           iconSrc={ModalTraitsIconMap[trait]}
           attributes={nft.metadata.attributes as Record<string, string>}

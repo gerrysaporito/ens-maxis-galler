@@ -33,9 +33,9 @@ export const DropdownCheckbox: React.FC<IDropdownCheckbox> = ({
     );
   };
 
-  const optionsElements = optionsList.map((option) => (
+  const optionsElements = optionsList.map((option, i) => (
     <Checkbox
-      key={option}
+      key={i}
       isChecked={optionsChecked.includes(option)}
       name={option}
       onChange={() => {

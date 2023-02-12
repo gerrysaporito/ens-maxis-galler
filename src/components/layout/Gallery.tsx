@@ -119,9 +119,7 @@ export const Gallery: React.FC<IGallery> = ({
     setResultsSize,
   ]);
 
-  const cards = nfts.map((nft) => (
-    <NftCard key={nft.metadata.name} nft={nft} />
-  ));
+  const cards = nfts.map((nft, i) => <NftCard key={i} nft={nft} />);
 
   const actionButtons = (
     <>

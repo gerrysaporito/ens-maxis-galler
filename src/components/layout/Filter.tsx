@@ -1,4 +1,11 @@
-import { Divider, Stack, Flex, Heading, IconButton } from '@chakra-ui/react';
+import {
+  Divider,
+  Stack,
+  Flex,
+  Heading,
+  IconButton,
+  Box,
+} from '@chakra-ui/react';
 import type { Dispatch, SetStateAction } from 'react';
 import { useState } from 'react';
 import { FaFilter } from 'react-icons/fa';
@@ -42,16 +49,15 @@ export const Filter: React.FC<IFilter> = ({
     };
 
     return (
-      <>
+      <Box key={i}>
         <DropdownCheckbox
-          key={AttributesObject[key] + i.toString()}
           label={key}
           options={AttributesObject[key]}
           optionsChecked={searchAttributes[key] ?? []}
           setOptionsChecked={updateSearchOptions}
         />
-        <Divider key={key + i.toString()} mt='2' mb='2' />
-      </>
+        <Divider mt='2' mb='2' />
+      </Box>
     );
   });
 
